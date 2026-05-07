@@ -58,7 +58,7 @@ export default function ProductDetail() {
   const handleAddToCart = async () => {
     setAddingCart(true)
     setCartMsg('')
-    const res = await api.addToCart(id)
+    const res = await api.addToCart({ productId: id })
     setAddingCart(false)
     if (res.ok) {
       setCartMsg('success')

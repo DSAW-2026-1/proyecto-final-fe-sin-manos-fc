@@ -32,7 +32,7 @@ export const api = {
   myOrders: (params = {}) => { const q = new URLSearchParams(params).toString(); return fetch(`${BASE}/orders/my${q ? '?' + q : ''}`, { headers: headers() }).then(r => r.json()) },
 
   getCart: () => fetch(`${BASE}/cart`, { headers: headers() }).then(r => r.json()),
-  addToCart: (productId, quantity = 1) => fetch(`${BASE}/cart/items`, { method: 'POST', headers: headers(), body: JSON.stringify({ productId, quantity }) }).then(r => r.json().then(d => ({ ok: r.ok, data: d }))),
+  addToCart: ({ productId, quantity = 1 }) => fetch(`${BASE}/cart/items`, { method: 'POST', headers: headers(), body: JSON.stringify({ productId, quantity }) }).then(r => r.json().then(d => ({ ok: r.ok, data: d }))),
   removeFromCart: (productId) => fetch(`${BASE}/cart/items/${productId}`, { method: 'DELETE', headers: headers() }).then(r => r.json().then(d => ({ ok: r.ok, data: d }))),
 }
 
