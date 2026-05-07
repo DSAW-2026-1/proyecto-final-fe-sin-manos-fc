@@ -160,10 +160,7 @@ export default function ProductDetail() {
                 {cartMsg && cartMsg !== 'success' && (
                   <p style={{ fontSize: 12, color: 'var(--danger)' }}>⚠ {cartMsg}</p>
                 )}
-                <button onClick={() => navigate('/confirmar', { state: { product } })} className="btn-gold" style={{ width: '100%', padding: 15, fontSize: 15, justifyContent: 'center' }}>
-                  Solicitar compra
-                </button>
-                <button onClick={handleAddToCart} className="btn-outline" style={{ width: '100%', padding: 14, justifyContent: 'center' }} disabled={addingCart}>
+                <button onClick={handleAddToCart} className="btn-gold" style={{ width: '100%', padding: 15, fontSize: 15, justifyContent: 'center' }} disabled={addingCart}>
                   {addingCart ? 'Agregando...' : '🛒 Agregar al carrito'}
                 </button>
                 <button onClick={async () => {

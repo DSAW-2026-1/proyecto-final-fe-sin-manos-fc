@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
+import { useApp } from '../context/AppContext'
 import { api } from '../api'
 
 const PAYMENT_METHODS = [
@@ -12,12 +13,15 @@ const PAYMENT_METHODS = [
 export default function Checkout() {
   const location = useLocation()
   const navigate = useNavigate()
+  const { user } = useApp()
   const { cartId, items = [] } = location.state || {}
   const [paymentMethod, setPaymentMethod] = useState(PAYMENT_METHODS[0].key)
   const [notes, setNotes] = useState('')
   const [confirming, setConfirming] = useState(false)
   const [error, setError] = useState('')
 
+  const ownItems = items.filter(item => (item.sellerId || item.seller_id) === user?.userId)
+  const hasOwnItems = ownItems.length > 0
   const total = items.reduce((sum, item) => sum + Number(item.price) * (item.quantity || 1), 0)
 
   if (!cartId) {
@@ -46,14 +50,25 @@ export default function Checkout() {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 24, alignItems: 'start' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
 
+            {/* Warning productos propios */}
+            {hasOwnItems && (
+              <div style={{ background: '#FEF3C7', border: '1px solid #F59E0B', borderRadius: 'var(--radius-md)', padding: '12px 16px' }}>
+                <p style={{ fontSize: 13, fontWeight: 600, color: '#92400E', marginBottom: 4 }}>⚠ No puedes comprar tus propios productos</p>
+                <p style={{ fontSize: 12, color: '#92400E' }}>
+                  Quita del carrito: {ownItems.map(i => i.title).join(', ')}
+                </p>
+              </div>
+            )}
+
             {/* Resumen de items */}
             <div className="card" style={{ padding: 24 }}>
               <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 700, color: 'var(--navy)', marginBottom: 16 }}>Resumen de compra</h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 {items.map((item) => {
                   const pid = item.productId || item.product_id
+                  const isOwn = (item.sellerId || item.seller_id) === user?.userId
                   return (
-                    <div key={pid} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <div key={pid} style={{ display: 'flex', alignItems: 'center', gap: 12, opacity: isOwn ? 0.5 : 1 }}>
                       <div style={{ width: 48, height: 48, borderRadius: 'var(--radius-md)', overflow: 'hidden', background: 'var(--gray-100)', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>
                         {item.image_url
                           ? <img src={`http://localhost:4000${item.image_url}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -61,7 +76,9 @@ export default function Checkout() {
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--gray-800)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</p>
-                        <p style={{ fontSize: 12, color: 'var(--gray-400)' }}>{item.seller_name}</p>
+                        <p style={{ fontSize: 12, color: isOwn ? 'var(--danger)' : 'var(--gray-400)' }}>
+                          {isOwn ? 'Este producto es tuyo y no puede comprarse' : item.seller_name}
+                        </p>
                       </div>
                       <p style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 700, color: 'var(--navy)', flexShrink: 0 }}>
                         ${Number(item.price).toLocaleString('es-CO')}
@@ -145,9 +162,14 @@ export default function Checkout() {
               onClick={handleConfirm}
               className="btn-gold"
               style={{ width: '100%', padding: 14, fontSize: 14, justifyContent: 'center' }}
-              disabled={confirming}>
+              disabled={confirming || hasOwnItems}>
               {confirming ? 'Confirmando...' : 'Confirmar pedido'}
             </button>
+            {hasOwnItems && (
+              <p style={{ fontSize: 11, color: 'var(--danger)', textAlign: 'center', marginTop: 4 }}>
+                Quita los productos propios del carrito para continuar
+              </p>
+            )}
           </div>
         </div>
       </div>

@@ -20,7 +20,7 @@ export default function PublicPerfil() {
       api.getReviewsBySeller(userId),
     ]).then(([user, prods, revs]) => {
       setSeller(user)
-      setProducts(Array.isArray(prods) ? prods.filter(p => String(p.sellerId ?? p.seller_id) === String(userId)) : [])
+      setProducts(Array.isArray(prods) ? prods.filter(p => p.sellerId === userId) : [])
       setReviews(Array.isArray(revs) ? revs : [])
       setLoading(false)
     }).catch(() => setLoading(false))
@@ -142,19 +142,21 @@ export default function PublicPerfil() {
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              {reviews.map(r => (
-                <div key={r.review_id} className="card" style={{ padding: 20 }}>
+              {reviews.map((r, i) => (
+                <div key={r.reviewId || r.review_id || i} className="card" style={{ padding: 20 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
                     <div>
-                      <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--gray-800)', marginBottom: 4 }}>{r.buyer_name}</p>
+                      <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--gray-800)', marginBottom: 4 }}>{r.buyerName || r.buyer_name}</p>
                       <StarRating value={r.rating} readonly size={15} />
                     </div>
                     <p style={{ fontSize: 11, color: 'var(--gray-400)' }}>
-                      {new Date(r.created_at).toLocaleDateString('es-CO', { year: 'numeric', month: 'short', day: 'numeric' })}
+                      {new Date(r.createdAt || r.created_at).toLocaleDateString('es-CO', { year: 'numeric', month: 'short', day: 'numeric' })}
                     </p>
                   </div>
                   {r.comment && <p style={{ fontSize: 13, color: 'var(--gray-600)', lineHeight: 1.6 }}>{r.comment}</p>}
-                  {r.product_title && <p style={{ fontSize: 11, color: 'var(--gold)', marginTop: 8 }}>📦 {r.product_title}</p>}
+                  {(r.productTitle || r.product_title) && (
+                    <p style={{ fontSize: 11, color: 'var(--gold)', marginTop: 8 }}>📦 {r.productTitle || r.product_title}</p>
+                  )}
                 </div>
               ))}
             </div>
