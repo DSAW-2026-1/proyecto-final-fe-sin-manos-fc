@@ -30,6 +30,8 @@ export const api = {
   createOrderSingle: (productId) => fetch(`${BASE}/orders`, { method: 'POST', headers: headers(), body: JSON.stringify({ productId }) }).then(r => r.json().then(d => ({ ok: r.ok, data: d }))),
   createOrderFromCart: (data) => fetch(`${BASE}/orders`, { method: 'POST', headers: headers(), body: JSON.stringify(data) }).then(r => r.json().then(d => ({ ok: r.ok, data: d }))),
   myOrders: (params = {}) => { const q = new URLSearchParams(params).toString(); return fetch(`${BASE}/orders/my${q ? '?' + q : ''}`, { headers: headers() }).then(r => r.json()) },
+  myVentas: () => fetch(`${BASE}/orders/selling`, { headers: headers() }).then(r => r.json()),
+  updateOrderStatus: (orderId, status) => fetch(`${BASE}/orders/${orderId}/status`, { method: 'PATCH', headers: headers(), body: JSON.stringify({ status }) }).then(r => r.json().then(d => ({ ok: r.ok, data: d }))),
 
   getCart: () => fetch(`${BASE}/cart`, { headers: headers() }).then(r => r.json()),
   addToCart: ({ productId, quantity = 1 }) => fetch(`${BASE}/cart/items`, { method: 'POST', headers: headers(), body: JSON.stringify({ productId, quantity }) }).then(r => r.json().then(d => ({ ok: r.ok, data: d }))),

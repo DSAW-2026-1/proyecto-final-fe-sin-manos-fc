@@ -12,6 +12,7 @@ import Mensajes from './pages/Mensajes'
 import Perfil from './pages/Perfil'
 import Cart from './pages/Cart'
 import Checkout from './pages/Checkout'
+import MyVentas from './pages/MyVentas'
 import PublicPerfil from './pages/PublicPerfil'
 
 function ProtectedRoute({ children }) {
@@ -49,6 +50,7 @@ function Layout() {
         <Route path="/perfil"         element={<ProtectedRoute><Perfil /></ProtectedRoute>} />
         <Route path="/carrito"        element={<ProtectedRoute><Cart /></ProtectedRoute>} />
         <Route path="/checkout"       element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
+        <Route path="/mis-ventas"     element={<ProtectedRoute><MyVentas /></ProtectedRoute>} />
         <Route path="/vendedor/:userId" element={<ProtectedRoute><PublicPerfil /></ProtectedRoute>} />
         <Route path="*"               element={<Navigate to="/home" replace />} />
       </Routes>

@@ -14,6 +14,7 @@ export default function Navbar() {
     { label: 'Catálogo',   path: '/home' },
     { label: 'Mensajes',   path: '/mensajes' },
     { label: 'Mis Compras',path: '/compras' },
+    ...(user.isSeller ? [{ label: 'Mis Ventas', path: '/mis-ventas' }] : []),
     { label: 'Mi Perfil',  path: '/perfil' },
   ]
 
@@ -92,6 +93,7 @@ export default function Navbar() {
                   {[
                     { label: 'Mi perfil', action: () => { navigate('/perfil'); setMenuOpen(false) } },
                     { label: 'Mis compras', action: () => { navigate('/compras'); setMenuOpen(false) } },
+                    ...(user.isSeller ? [{ label: 'Mis ventas', action: () => { navigate('/mis-ventas'); setMenuOpen(false) } }] : []),
                     { label: 'Publicar producto', action: () => { navigate('/crear-producto'); setMenuOpen(false) } },
                   ].map(item => (
                     <button key={item.label} onClick={item.action} style={{ width: '100%', textAlign: 'left', padding: '10px 16px', background: 'none', border: 'none', fontSize: 13, cursor: 'pointer', color: 'var(--gray-600)', fontFamily: 'var(--font-body)' }}>

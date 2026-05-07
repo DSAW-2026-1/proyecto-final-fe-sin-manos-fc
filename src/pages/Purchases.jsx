@@ -170,31 +170,92 @@ export function ConfirmPurchase() {
 export function OrderSuccess() {
   const navigate = useNavigate()
   const location = useLocation()
-  const { product, order } = location.state || {}
+  const { user } = useApp()
+  const { order, items = [], paymentMethodLabel, product } = location.state || {}
+
+  const total = items.length > 0
+    ? items.reduce((sum, item) => sum + Number(item.price) * (item.quantity || 1), 0)
+    : product ? Number(product.price) : 0
+
+  const orderId = order?.orderId || order?.order_id || order?.id
+  const orderDate = new Date().toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' })
 
   return (
     <div className="page-container">
       <Navbar />
-      <div style={{ maxWidth: 500, margin: '0 auto', padding: '60px 20px', textAlign: 'center' }}>
+      <div style={{ maxWidth: 540, margin: '0 auto', padding: '48px 20px' }}>
         <div className="animate-fadeUp">
-          <div style={{ width: 80, height: 80, borderRadius: '50%', background: '#E6F4EC', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px', fontSize: 36 }}>✓</div>
-          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 30, fontWeight: 700, color: 'var(--navy)', marginBottom: 12 }}>¡Solicitud enviada!</h1>
-          <p style={{ fontSize: 15, color: 'var(--gray-400)', marginBottom: 32 }}>El vendedor recibirá tu solicitud y te confirmará pronto.</p>
+          <div style={{ width: 72, height: 72, borderRadius: '50%', background: '#E6F4EC', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', fontSize: 32 }}>✓</div>
+          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 28, fontWeight: 700, color: 'var(--navy)', marginBottom: 8, textAlign: 'center' }}>¡Pedido confirmado!</h1>
+          <p style={{ fontSize: 14, color: 'var(--gray-400)', marginBottom: 32, textAlign: 'center' }}>El vendedor recibirá tu solicitud y te confirmará pronto.</p>
 
-          {product && (
-            <div className="card" style={{ padding: 20, textAlign: 'left', marginBottom: 32 }}>
-              <p style={{ fontSize: 13, color: 'var(--gray-400)', marginBottom: 4 }}>Producto</p>
-              <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--gray-800)', marginBottom: 12 }}>{product.title}</p>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                <span style={{ fontSize: 13, color: 'var(--gray-400)' }}>Total</span>
-                <span style={{ fontSize: 14, fontWeight: 600 }}>${Number(product.price).toLocaleString('es-CO')}</span>
+          {/* Recibo */}
+          <div className="card" style={{ padding: 24, marginBottom: 24 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, paddingBottom: 14, borderBottom: '1px solid var(--gray-100)' }}>
+              <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--navy)' }}>Recibo de compra</p>
+              <p style={{ fontSize: 11, color: 'var(--gray-400)' }}>{orderDate}</p>
+            </div>
+
+            {orderId && (
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                <span style={{ fontSize: 12, color: 'var(--gray-400)' }}>N° de orden</span>
+                <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--gray-800)', fontFamily: 'monospace' }}>#{orderId}</span>
               </div>
+            )}
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
+              <span style={{ fontSize: 12, color: 'var(--gray-400)' }}>Comprador</span>
+              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--gray-800)' }}>{user?.name}</span>
+            </div>
+
+            {/* Productos del carrito */}
+            {items.length > 0 && (
+              <div style={{ marginBottom: 16 }}>
+                <p style={{ fontSize: 12, color: 'var(--gray-400)', marginBottom: 8 }}>Productos</p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {items.map((item) => {
+                    const pid = item.productId || item.product_id
+                    return (
+                      <div key={pid} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, minWidth: 0 }}>
+                          <div style={{ width: 32, height: 32, borderRadius: 6, overflow: 'hidden', background: 'var(--gray-100)', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>
+                            {item.image_url ? <img src={`http://localhost:4000${item.image_url}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : '📦'}
+                          </div>
+                          <span style={{ fontSize: 12, color: 'var(--gray-800)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</span>
+                        </div>
+                        <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--navy)', flexShrink: 0 }}>${Number(item.price).toLocaleString('es-CO')}</span>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Producto individual (flujo legacy) */}
+            {items.length === 0 && product && (
+              <div style={{ marginBottom: 16 }}>
+                <p style={{ fontSize: 12, color: 'var(--gray-400)', marginBottom: 4 }}>Producto</p>
+                <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--gray-800)' }}>{product.title}</p>
+              </div>
+            )}
+
+            <div style={{ borderTop: '1px solid var(--gray-100)', paddingTop: 12, marginBottom: 10 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ fontSize: 13, color: 'var(--gray-400)' }}>Estado</span>
-                <span style={{ fontSize: 13, fontWeight: 600, color: '#8B6B1A' }}>Pendiente</span>
+                <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--gray-800)' }}>Total</span>
+                <span style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 700, color: 'var(--navy)' }}>${total.toLocaleString('es-CO')}</span>
               </div>
             </div>
-          )}
+
+            {paymentMethodLabel && (
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8 }}>
+                <span style={{ fontSize: 12, color: 'var(--gray-400)' }}>Método de pago</span>
+                <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--gray-800)' }}>{paymentMethodLabel}</span>
+              </div>
+            )}
+
+            <div style={{ marginTop: 14, padding: '8px 12px', background: 'var(--gold-pale)', borderRadius: 'var(--radius-sm)' }}>
+              <span style={{ fontSize: 11, fontWeight: 600, color: '#8B6B1A' }}>Estado: Pendiente — el vendedor confirmará pronto</span>
+            </div>
+          </div>
 
           <div style={{ display: 'flex', gap: 12 }}>
             <button onClick={() => navigate('/home')} className="btn-outline" style={{ flex: 1, padding: 13 }}>Volver al inicio</button>

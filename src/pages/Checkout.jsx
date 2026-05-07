@@ -35,7 +35,14 @@ export default function Checkout() {
     const res = await api.createOrderFromCart({ cartId, paymentMethod: 'simulated', notes })
     setConfirming(false)
     if (!res.ok) { setError(res.data?.error || 'Error al confirmar el pedido'); return }
-    navigate('/orden-exitosa')
+    navigate('/orden-exitosa', {
+      state: {
+        order: res.data,
+        items,
+        paymentMethodLabel: PAYMENT_METHODS.find(p => p.key === paymentMethod)?.label,
+        notes,
+      }
+    })
   }
 
   return (
