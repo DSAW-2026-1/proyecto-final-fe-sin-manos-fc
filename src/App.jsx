@@ -10,6 +10,8 @@ import CreateProduct from './pages/CreateProduct'
 import { Purchases, ConfirmPurchase, OrderSuccess } from './pages/Purchases'
 import Mensajes from './pages/Mensajes'
 import Perfil from './pages/Perfil'
+import Cart from './pages/Cart'
+import PublicPerfil from './pages/PublicPerfil'
 
 function ProtectedRoute({ children }) {
   const { user } = useApp()
@@ -44,7 +46,9 @@ function Layout() {
         <Route path="/orden-exitosa"  element={<ProtectedRoute><OrderSuccess /></ProtectedRoute>} />
         <Route path="/mensajes"       element={<ProtectedRoute><Mensajes /></ProtectedRoute>} />
         <Route path="/perfil"         element={<ProtectedRoute><Perfil /></ProtectedRoute>} />
-        <Route path="*"               element={<Navigate to="/" replace />} />
+        <Route path="/carrito"        element={<ProtectedRoute><Cart /></ProtectedRoute>} />
+        <Route path="/vendedor/:userId" element={<ProtectedRoute><PublicPerfil /></ProtectedRoute>} />
+        <Route path="*"               element={<Navigate to="/home" replace />} />
       </Routes>
       {showBottom && <BottomNav />}
     </>

@@ -21,6 +21,8 @@ export default function ProductDetail() {
   const [reviewSuccess, setReviewSuccess] = useState(false)
   const [alreadyReviewed, setAlreadyReviewed] = useState(false)
   const [selectedImg, setSelectedImg] = useState(0)
+  const [cartMsg, setCartMsg] = useState('')
+  const [addingCart, setAddingCart] = useState(false)
 
   const isOwner = user && product && user.userId === product.seller?.id
 
@@ -51,6 +53,19 @@ export default function ProductDetail() {
     setReviewSuccess(true)
     setMyRating(0); setMyComment('')
     loadReviews(id)
+  }
+
+  const handleAddToCart = async () => {
+    setAddingCart(true)
+    setCartMsg('')
+    const res = await api.addToCart(id)
+    setAddingCart(false)
+    if (res.ok) {
+      setCartMsg('success')
+    } else {
+      setCartMsg(res.data?.error || 'No se pudo agregar al carrito')
+    }
+    setTimeout(() => setCartMsg(''), 3000)
   }
 
   const handleHelpful = async (reviewId) => {
@@ -115,26 +130,41 @@ export default function ProductDetail() {
             </div>
 
             {/* Seller */}
-            <div style={{ background: 'var(--white)', border: '1px solid var(--gray-100)', borderRadius: 'var(--radius-lg)', padding: 16, display: 'flex', alignItems: 'center', gap: 14 }}>
+            <div
+              style={{ background: 'var(--white)', border: '1px solid var(--gray-100)', borderRadius: 'var(--radius-lg)', padding: 16, display: 'flex', alignItems: 'center', gap: 14, cursor: 'pointer' }}
+              onClick={() => navigate(`/vendedor/${product.seller?.id}`)}>
               <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'var(--gold-pale)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, fontWeight: 700, color: 'var(--navy)', flexShrink: 0, overflow: 'hidden' }}>
                 {product.seller?.photoUrl
                   ? <img src={`http://localhost:4000${product.seller.photoUrl}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   : product.seller?.name?.charAt(0)}
               </div>
               <div style={{ flex: 1 }}>
-                <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--gray-800)' }}>{product.seller?.name}</p>
+                <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--navy)', textDecoration: 'underline' }}>{product.seller?.name}</p>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
                   <StarRating value={Math.round(product.seller?.reputation || 0)} readonly size={13} />
                   <span style={{ fontSize: 11, color: 'var(--gray-400)' }}>{parseFloat(product.seller?.reputation || 0).toFixed(1)}</span>
                 </div>
               </div>
+              <span style={{ fontSize: 11, color: 'var(--gray-400)', flexShrink: 0 }}>Ver perfil →</span>
             </div>
 
             {/* Actions — solo si no es el dueño */}
             {!isOwner && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {cartMsg === 'success' && (
+                  <div style={{ background: '#E6F4EC', borderRadius: 'var(--radius-md)', padding: '10px 14px', fontSize: 13, color: 'var(--success)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span>✓ Agregado al carrito</span>
+                    <button onClick={() => navigate('/carrito')} style={{ background: 'none', border: 'none', fontSize: 12, color: 'var(--navy)', cursor: 'pointer', fontFamily: 'var(--font-body)', textDecoration: 'underline' }}>Ver carrito</button>
+                  </div>
+                )}
+                {cartMsg && cartMsg !== 'success' && (
+                  <p style={{ fontSize: 12, color: 'var(--danger)' }}>⚠ {cartMsg}</p>
+                )}
                 <button onClick={() => navigate('/confirmar', { state: { product } })} className="btn-gold" style={{ width: '100%', padding: 15, fontSize: 15, justifyContent: 'center' }}>
                   Solicitar compra
+                </button>
+                <button onClick={handleAddToCart} className="btn-outline" style={{ width: '100%', padding: 14, justifyContent: 'center' }} disabled={addingCart}>
+                  {addingCart ? 'Agregando...' : '🛒 Agregar al carrito'}
                 </button>
                 <button onClick={async () => {
                     const res = await convApi.create({ productId: id, sellerId: product.seller?.id })

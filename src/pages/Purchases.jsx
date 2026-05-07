@@ -2,9 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import { useApp } from '../context/AppContext'
-
-const BASE = 'http://localhost:4000/api'
-const getToken = () => localStorage.getItem('token')
+import { api } from '../api'
 
 const STATUS_LABELS = {
   pending:   { label: 'Pendiente',  color: '#8B6B1A', bg: 'var(--gold-pale)' },
@@ -14,32 +12,72 @@ const STATUS_LABELS = {
   cancelled: { label: 'Cancelada',  color: '#C0392B', bg: '#FDECEA' },
 }
 
+const STATUS_FILTERS = [
+  { key: '', label: 'Todas' },
+  { key: 'pending', label: 'Pendientes' },
+  { key: 'confirmed', label: 'Confirmadas' },
+  { key: 'delivered', label: 'Entregadas' },
+  { key: 'completed', label: 'Completadas' },
+  { key: 'cancelled', label: 'Canceladas' },
+]
+
 export function Purchases() {
   const navigate = useNavigate()
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
+  const [filterStatus, setFilterStatus] = useState('')
 
   useEffect(() => {
-    fetch(`${BASE}/orders/my`, { headers: { Authorization: `Bearer ${getToken()}` } })
-      .then(r => r.json())
+    const params = filterStatus ? { status: filterStatus } : {}
+    api.myOrders(params)
       .then(data => { setOrders(Array.isArray(data) ? data : []); setLoading(false) })
       .catch(() => setLoading(false))
-  }, [])
+  }, [filterStatus])
 
   return (
     <div className="page-container">
       <Navbar />
       <div style={{ maxWidth: 800, margin: '0 auto', padding: '32px 20px' }}>
-        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 28, fontWeight: 700, color: 'var(--navy)', marginBottom: 8 }}>Mis Compras</h1>
-        <p style={{ fontSize: 14, color: 'var(--gray-400)', marginBottom: 32 }}>Historial de tus solicitudes de compra</p>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
+          <div>
+            <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 28, fontWeight: 700, color: 'var(--navy)', marginBottom: 4 }}>Mis Compras</h1>
+            <p style={{ fontSize: 14, color: 'var(--gray-400)' }}>Historial de tus solicitudes de compra</p>
+          </div>
+          <button onClick={() => navigate('/carrito')} className="btn-outline" style={{ padding: '8px 16px', fontSize: 13, flexShrink: 0 }}>
+            🛒 Mi carrito
+          </button>
+        </div>
+
+        {/* Filtros */}
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 24 }}>
+          {STATUS_FILTERS.map(f => (
+            <button
+              key={f.key}
+              onClick={() => { setFilterStatus(f.key); setLoading(true) }}
+              style={{
+                padding: '6px 14px', borderRadius: '100px', border: '1px solid',
+                fontSize: 12, fontWeight: 500, cursor: 'pointer', fontFamily: 'var(--font-body)',
+                borderColor: filterStatus === f.key ? 'var(--navy)' : 'var(--gray-200)',
+                background: filterStatus === f.key ? 'var(--navy)' : 'var(--white)',
+                color: filterStatus === f.key ? 'var(--white)' : 'var(--gray-600)',
+                transition: 'all 0.15s',
+              }}>
+              {f.label}
+            </button>
+          ))}
+        </div>
 
         {loading ? (
           <p style={{ textAlign: 'center', color: 'var(--gray-400)', padding: '60px 0' }}>Cargando...</p>
         ) : orders.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '80px 0' }}>
             <p style={{ fontSize: 40, marginBottom: 12 }}>🛒</p>
-            <p style={{ fontSize: 15, fontWeight: 500, color: 'var(--gray-600)', marginBottom: 8 }}>No tienes compras aún</p>
-            <button onClick={() => navigate('/home')} className="btn-primary" style={{ padding: '10px 24px' }}>Explorar productos</button>
+            <p style={{ fontSize: 15, fontWeight: 500, color: 'var(--gray-600)', marginBottom: 8 }}>
+              {filterStatus ? 'No hay compras con ese estado' : 'No tienes compras aún'}
+            </p>
+            {!filterStatus && (
+              <button onClick={() => navigate('/home')} className="btn-primary" style={{ padding: '10px 24px' }}>Explorar productos</button>
+            )}
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>

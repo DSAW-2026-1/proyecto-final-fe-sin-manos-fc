@@ -27,7 +27,13 @@ export const api = {
   markHelpful: (reviewId) => fetch(`${BASE}/reviews/${reviewId}/helpful`, { method: 'PATCH', headers: headers() }).then(r => r.json()),
 
   createOrder: (data) => fetch(`${BASE}/orders`, { method: 'POST', headers: headers(), body: JSON.stringify(data) }).then(r => r.json().then(d => ({ ok: r.ok, data: d }))),
-  myOrders: () => fetch(`${BASE}/orders/my`, { headers: headers() }).then(r => r.json()),
+  createOrderSingle: (productId) => fetch(`${BASE}/orders`, { method: 'POST', headers: headers(), body: JSON.stringify({ productId }) }).then(r => r.json().then(d => ({ ok: r.ok, data: d }))),
+  createOrderFromCart: (cartId) => fetch(`${BASE}/orders`, { method: 'POST', headers: headers(), body: JSON.stringify({ cartId }) }).then(r => r.json().then(d => ({ ok: r.ok, data: d }))),
+  myOrders: (params = {}) => { const q = new URLSearchParams(params).toString(); return fetch(`${BASE}/orders/my${q ? '?' + q : ''}`, { headers: headers() }).then(r => r.json()) },
+
+  getCart: () => fetch(`${BASE}/cart`, { headers: headers() }).then(r => r.json()),
+  addToCart: (productId, quantity = 1) => fetch(`${BASE}/cart/items`, { method: 'POST', headers: headers(), body: JSON.stringify({ productId, quantity }) }).then(r => r.json().then(d => ({ ok: r.ok, data: d }))),
+  removeFromCart: (productId) => fetch(`${BASE}/cart/items/${productId}`, { method: 'DELETE', headers: headers() }).then(r => r.json().then(d => ({ ok: r.ok, data: d }))),
 }
 
 export const convApi = {
@@ -35,6 +41,7 @@ export const convApi = {
   list: () => fetch(`${BASE}/conversations`, { headers: headers() }).then(r => r.json()),
   getMessages: (convId, page = 1) => fetch(`${BASE}/conversations/${convId}/messages?page=${page}`, { headers: headers() }).then(r => r.json()),
   sendMessage: (convId, content) => fetch(`${BASE}/conversations/${convId}/messages`, { method: 'POST', headers: headers(), body: JSON.stringify({ content }) }).then(r => r.json().then(d => ({ ok: r.ok, data: d }))),
+  deleteConversation: (convId) => fetch(`${BASE}/conversations/${convId}`, { method: 'DELETE', headers: headers() }).then(r => r.json().then(d => ({ ok: r.ok, data: d }))),
 }
 
 export const SOCKET_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000'

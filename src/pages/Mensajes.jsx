@@ -18,7 +18,10 @@ export default function Mensajes() {
   const [loadingChats, setLoadingChats] = useState(true)
   const [loadingMsgs, setLoadingMsgs] = useState(false)
   const [sending, setSending] = useState(false)
+  const [confirmDelete, setConfirmDelete] = useState(false)
+  const [deleting, setDeleting] = useState(false)
   const messagesEndRef = useRef(null)
+  const messagesContainerRef = useRef(null)
   const inputRef = useRef(null)
 
   // Conectar Socket.io al montar
@@ -62,7 +65,8 @@ export default function Mensajes() {
 
   // Auto-scroll al fondo
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    const container = messagesContainerRef.current
+    if (container) container.scrollTop = container.scrollHeight
   }, [messages])
 
   const openConversation = async (conv) => {
@@ -98,6 +102,17 @@ export default function Mensajes() {
           : c
       ))
     }
+  }
+
+  const handleDeleteConversation = async () => {
+    if (!activeConv) return
+    setDeleting(true)
+    await convApi.deleteConversation(activeConv.conversationId)
+    setDeleting(false)
+    setConfirmDelete(false)
+    setActiveConv(null)
+    setMessages([])
+    setChats(prev => prev.filter(c => c.conversationId !== activeConv.conversationId))
   }
 
   const formatTime = (dateStr) => {
@@ -157,20 +172,41 @@ export default function Mensajes() {
 
           {/* Ventana de chat */}
           {activeConv ? (
-            <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0, position: 'relative' }}>
               {/* Header */}
               <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--gray-100)', display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
                 <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'var(--gold-pale)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 700, color: 'var(--navy)' }}>
                   {activeConv.otherUser?.name?.charAt(0)}
                 </div>
-                <div>
+                <div style={{ flex: 1 }}>
                   <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--gray-800)' }}>{activeConv.otherUser?.name}</p>
                   <p style={{ fontSize: 11, color: 'var(--gold)' }}>📦 {activeConv.productTitle}</p>
                 </div>
+                <button
+                  onClick={() => setConfirmDelete(true)}
+                  style={{ background: 'none', border: '1px solid var(--gray-200)', borderRadius: 'var(--radius-sm)', padding: '5px 10px', fontSize: 12, color: 'var(--danger)', cursor: 'pointer', fontFamily: 'var(--font-body)', flexShrink: 0 }}>
+                  Eliminar
+                </button>
               </div>
 
+              {/* Modal de confirmación */}
+              {confirmDelete && (
+                <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 300, borderRadius: 'var(--radius-xl)' }}>
+                  <div style={{ background: 'var(--white)', borderRadius: 'var(--radius-lg)', padding: 24, maxWidth: 320, width: '100%', margin: '0 16px', boxShadow: 'var(--shadow-lg)' }}>
+                    <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--gray-800)', marginBottom: 8 }}>¿Eliminar conversación?</p>
+                    <p style={{ fontSize: 13, color: 'var(--gray-400)', marginBottom: 20 }}>Se eliminarán todos los mensajes. Esta acción no se puede deshacer.</p>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <button onClick={() => setConfirmDelete(false)} className="btn-outline" style={{ flex: 1, padding: '9px 0' }} disabled={deleting}>Cancelar</button>
+                      <button onClick={handleDeleteConversation} style={{ flex: 1, padding: '9px 0', background: 'var(--danger)', color: 'var(--white)', border: 'none', borderRadius: 'var(--radius-md)', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }} disabled={deleting}>
+                        {deleting ? 'Eliminando...' : 'Eliminar'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Mensajes */}
-              <div style={{ flex: 1, overflowY: 'auto', padding: '20px', display: 'flex', flexDirection: 'column', gap: 10, background: 'var(--gray-50)' }}>
+              <div ref={messagesContainerRef} style={{ flex: 1, overflowY: 'auto', padding: '20px', display: 'flex', flexDirection: 'column', gap: 10, background: 'var(--gray-50)', minHeight: 0 }}>
                 {loadingMsgs ? (
                   <div style={{ textAlign: 'center', color: 'var(--gray-400)', padding: '40px 0' }}>Cargando mensajes...</div>
                 ) : messages.length === 0 ? (
