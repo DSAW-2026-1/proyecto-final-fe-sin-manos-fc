@@ -20,8 +20,9 @@ export default function PublicPerfil() {
       api.getReviewsBySeller(userId),
     ]).then(([user, prods, revs]) => {
       setSeller(user)
-      setProducts(Array.isArray(prods) ? prods.filter(p => p.sellerId === userId) : [])
-      setReviews(Array.isArray(revs) ? revs : [])
+      const arr = prods?.data || (Array.isArray(prods) ? prods : [])
+      setProducts(arr.filter(p => p.sellerId === userId))
+      setReviews(Array.isArray(revs) ? revs : (revs?.data || []))
       setLoading(false)
     }).catch(() => setLoading(false))
   }, [userId])
