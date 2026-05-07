@@ -84,7 +84,7 @@ export default function ProductDetail() {
       <div style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 20px' }}>
         <button onClick={() => navigate(-1)} className="btn-ghost" style={{ marginBottom: 24 }}>← Volver</button>
 
-        <div className='product-detail-grid' style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: 40, marginBottom: 48 }} className="animate-fadeUp">
+        <div className="product-detail-grid animate-fadeUp" style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: 40, marginBottom: 48 }}>
           {/* Images */}
           <div>
             <div style={{ borderRadius: 'var(--radius-xl)', overflow: 'hidden', aspectRatio: '4/3', background: 'var(--gray-100)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
