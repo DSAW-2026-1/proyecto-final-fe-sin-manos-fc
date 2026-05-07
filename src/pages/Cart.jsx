@@ -8,8 +8,6 @@ export default function Cart() {
   const [cart, setCart] = useState(null)
   const [loading, setLoading] = useState(true)
   const [removing, setRemoving] = useState(null)
-  const [ordering, setOrdering] = useState(false)
-  const [error, setError] = useState('')
 
   const loadCart = async () => {
     const data = await api.getCart()
@@ -26,14 +24,9 @@ export default function Cart() {
     loadCart()
   }
 
-  const handleOrder = async () => {
+  const handleOrder = () => {
     if (!cart?.cartId) return
-    setOrdering(true)
-    setError('')
-    const res = await api.createOrderFromCart(cart.cartId)
-    setOrdering(false)
-    if (!res.ok) { setError(res.data?.error || 'Error al crear el pedido'); return }
-    navigate('/compras')
+    navigate('/checkout', { state: { cartId: cart.cartId, items: cart.items || [] } })
   }
 
   const items = cart?.items || []
@@ -57,12 +50,6 @@ export default function Cart() {
           </div>
           <button onClick={() => navigate('/compras')} className="btn-ghost">Mis compras</button>
         </div>
-
-        {error && (
-          <div style={{ background: '#FDECEA', border: '1px solid #F5C6C2', borderRadius: 'var(--radius-md)', padding: '10px 14px', fontSize: 13, color: 'var(--danger)', marginBottom: 20 }}>
-            ⚠ {error}
-          </div>
-        )}
 
         {items.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '80px 0' }}>
@@ -127,8 +114,8 @@ export default function Cart() {
                   <span style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 700, color: 'var(--navy)' }}>${total.toLocaleString('es-CO')}</span>
                 </div>
               </div>
-              <button onClick={handleOrder} className="btn-gold" style={{ width: '100%', padding: 14, fontSize: 14, justifyContent: 'center' }} disabled={ordering}>
-                {ordering ? 'Procesando...' : 'Solicitar todo'}
+              <button onClick={handleOrder} className="btn-gold" style={{ width: '100%', padding: 14, fontSize: 14, justifyContent: 'center' }}>
+                Solicitar todo
               </button>
             </div>
           </div>

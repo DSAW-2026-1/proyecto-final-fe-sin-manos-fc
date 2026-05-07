@@ -28,7 +28,7 @@ export const api = {
 
   createOrder: (data) => fetch(`${BASE}/orders`, { method: 'POST', headers: headers(), body: JSON.stringify(data) }).then(r => r.json().then(d => ({ ok: r.ok, data: d }))),
   createOrderSingle: (productId) => fetch(`${BASE}/orders`, { method: 'POST', headers: headers(), body: JSON.stringify({ productId }) }).then(r => r.json().then(d => ({ ok: r.ok, data: d }))),
-  createOrderFromCart: (cartId) => fetch(`${BASE}/orders`, { method: 'POST', headers: headers(), body: JSON.stringify({ cartId }) }).then(r => r.json().then(d => ({ ok: r.ok, data: d }))),
+  createOrderFromCart: (data) => fetch(`${BASE}/orders`, { method: 'POST', headers: headers(), body: JSON.stringify(data) }).then(r => r.json().then(d => ({ ok: r.ok, data: d }))),
   myOrders: (params = {}) => { const q = new URLSearchParams(params).toString(); return fetch(`${BASE}/orders/my${q ? '?' + q : ''}`, { headers: headers() }).then(r => r.json()) },
 
   getCart: () => fetch(`${BASE}/cart`, { headers: headers() }).then(r => r.json()),

@@ -16,11 +16,11 @@ export default function PublicPerfil() {
   useEffect(() => {
     Promise.all([
       api.getUser(userId),
-      api.getProducts({ sellerId: userId }),
+      api.getProducts(),
       api.getReviewsBySeller(userId),
     ]).then(([user, prods, revs]) => {
       setSeller(user)
-      setProducts(Array.isArray(prods) ? prods : [])
+      setProducts(Array.isArray(prods) ? prods.filter(p => String(p.sellerId ?? p.seller_id) === String(userId)) : [])
       setReviews(Array.isArray(revs) ? revs : [])
       setLoading(false)
     }).catch(() => setLoading(false))

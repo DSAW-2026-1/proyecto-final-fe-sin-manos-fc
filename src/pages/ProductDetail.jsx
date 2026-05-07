@@ -47,7 +47,7 @@ export default function ProductDetail() {
     setReviewError('')
     if (!myRating) { setReviewError('Selecciona una calificación de 1 a 5 estrellas'); return }
     setSubmitting(true)
-    const res = await api.createReview({ productId: id, rating: myRating, comment: myComment })
+    const res = await api.createReview({ productId: id, rating: myRating, comment: myComment, sellerId: product.seller?.id })
     setSubmitting(false)
     if (!res.ok) { setReviewError(res.data?.error || 'Error al enviar la reseña'); return }
     setReviewSuccess(true)

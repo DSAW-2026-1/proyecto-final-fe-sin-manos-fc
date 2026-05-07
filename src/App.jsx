@@ -11,6 +11,7 @@ import { Purchases, ConfirmPurchase, OrderSuccess } from './pages/Purchases'
 import Mensajes from './pages/Mensajes'
 import Perfil from './pages/Perfil'
 import Cart from './pages/Cart'
+import Checkout from './pages/Checkout'
 import PublicPerfil from './pages/PublicPerfil'
 
 function ProtectedRoute({ children }) {
@@ -47,6 +48,7 @@ function Layout() {
         <Route path="/mensajes"       element={<ProtectedRoute><Mensajes /></ProtectedRoute>} />
         <Route path="/perfil"         element={<ProtectedRoute><Perfil /></ProtectedRoute>} />
         <Route path="/carrito"        element={<ProtectedRoute><Cart /></ProtectedRoute>} />
+        <Route path="/checkout"       element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
         <Route path="/vendedor/:userId" element={<ProtectedRoute><PublicPerfil /></ProtectedRoute>} />
         <Route path="*"               element={<Navigate to="/home" replace />} />
       </Routes>
