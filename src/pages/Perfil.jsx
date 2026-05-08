@@ -232,18 +232,18 @@ export default function Perfil() {
                 <p style={{ fontSize: 13, color: 'var(--gray-400)', marginTop: 4 }}>Las reseñas aparecerán cuando otros compren tus productos</p>
               </div>
             ) : reviews.map(r => (
-              <div key={r.review_id} className="card" style={{ padding: 20 }}>
+              <div key={r.reviewId} className="card" style={{ padding: 20 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
                   <div>
-                    <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--gray-800)', marginBottom: 4 }}>{r.buyer_name}</p>
+                    <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--gray-800)', marginBottom: 4 }}>{r.buyerName}</p>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       <StarRating value={r.rating} readonly size={15} />
-                      <span style={{ fontSize: 11, color: 'var(--gray-400)' }}>sobre <strong style={{ color: 'var(--navy)' }}>{r.product_title}</strong></span>
+                      <span style={{ fontSize: 11, color: 'var(--gray-400)' }}>sobre <strong style={{ color: 'var(--navy)' }}>{r.productTitle}</strong></span>
                     </div>
                   </div>
                   <div style={{ textAlign: 'right', fontSize: 11, color: 'var(--gray-400)' }}>
-                    <p>{new Date(r.created_at).toLocaleDateString('es-CO', { year: 'numeric', month: 'short', day: 'numeric' })}</p>
-                    <p>{new Date(r.created_at).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })}</p>
+                    <p>{new Date(r.createdAt).toLocaleDateString('es-CO', { year: 'numeric', month: 'short', day: 'numeric' })}</p>
+                    <p>{new Date(r.createdAt).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })}</p>
                   </div>
                 </div>
                 {r.comment && <p style={{ fontSize: 13, color: 'var(--gray-600)', lineHeight: 1.6, marginBottom: 10 }}>{r.comment}</p>}
