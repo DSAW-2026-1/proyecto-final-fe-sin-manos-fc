@@ -35,7 +35,7 @@ export default function Perfil() {
       .catch(() => setLoadingProducts(false))
 
     api.getReviewsBySeller(user.userId)
-      .then(data => setReviews(Array.isArray(data) ? data : []))
+      .then(data => setReviews(Array.isArray(data) ? data : (data?.data || [])))
       .catch(() => {})
   }, [user?.userId])
 
