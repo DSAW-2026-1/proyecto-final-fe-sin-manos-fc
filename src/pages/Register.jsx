@@ -10,6 +10,7 @@ export default function Register() {
   const [fotoPreview, setFotoPreview] = useState(null)
   const [fotoError, setFotoError] = useState('')
   const [errors, setErrors] = useState({})
+  const [attempted, setAttempted] = useState(false)
   const [apiError, setApiError] = useState('')
   const [loading, setLoading] = useState(false)
   const { register } = useApp()
@@ -20,6 +21,8 @@ export default function Register() {
   const validateStep1 = () => {
     const e = {}
     if (!form.name.trim()) e.name = 'El nombre es obligatorio'
+    else if (form.name.trim().length < 4) e.name = 'Mínimo 4 caracteres'
+    else if (!/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$/.test(form.name.trim())) e.name = 'Solo se permiten letras, espacios, tildes y ñ'
     if (!form.email) e.email = 'El correo es obligatorio'
     else if (!form.email.endsWith('@unisabana.edu.co')) e.email = 'Debe ser un correo institucional (@unisabana.edu.co)'
     if (!form.password) e.password = 'La contraseña es obligatoria'
@@ -30,7 +33,16 @@ export default function Register() {
     return e
   }
 
+  const validateName = (v) => {
+    const t = v.trim()
+    if (!t) return 'El nombre es obligatorio'
+    if (t.length < 4) return 'Mínimo 4 caracteres'
+    if (!/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$/.test(t)) return 'Solo se permiten letras, espacios, tildes y ñ'
+    return ''
+  }
+
   const handleNext = () => {
+    setAttempted(true)
     const e = validateStep1()
     if (Object.keys(e).length) { setErrors(e); return }
     setErrors({}); setStep(2)
@@ -113,7 +125,14 @@ export default function Register() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                 <div className="input-group">
                   <label className="input-label">Nombre completo</label>
-                  <input className="input-field" placeholder="Tu nombre" value={form.name} onChange={e => set('name', e.target.value)} />
+                  <input className="input-field" placeholder="Tu nombre" value={form.name} onChange={e => {
+                    const v = e.target.value
+                    set('name', v)
+                    if (attempted) {
+                      const err = validateName(v)
+                      setErrors(prev => { const n = { ...prev }; if (err) n.name = err; else delete n.name; return n })
+                    }
+                  }} />
                   {errors.name && <span className="input-error">{errors.name}</span>}
                 </div>
                 <div className="input-group">
