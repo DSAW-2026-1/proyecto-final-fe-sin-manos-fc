@@ -211,7 +211,15 @@ export default function Perfil() {
                       </div>
                       <div style={{ padding: '12px 14px' }}>
                         <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--gray-800)', marginBottom: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.title}</p>
-                        <p style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 700, color: 'var(--navy)', marginBottom: 10 }}>${p.price.toLocaleString('es-CO')}</p>
+                        <p style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 700, color: 'var(--navy)', marginBottom: 6 }}>${p.price.toLocaleString('es-CO')}</p>
+                        {p.status === 'sold'
+                          ? <span style={{ display: 'inline-block', fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: '100px', background: '#FDECEA', color: 'var(--danger)', border: '1px solid #F5C6C2', marginBottom: 8 }}>Agotado</span>
+                          : p.stock === 1
+                            ? <span style={{ display: 'inline-block', fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: '100px', background: '#FEF3C7', color: '#D97706', border: '1px solid #FCD34D', marginBottom: 8 }}>Última unidad</span>
+                            : p.stock > 1
+                              ? <span style={{ display: 'inline-block', fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: '100px', background: '#E6F4EC', color: 'var(--success)', border: '1px solid #A7D7B7', marginBottom: 8 }}>{p.stock} en stock</span>
+                              : null
+                        }
                         <div style={{ display: 'flex', gap: 6 }}>
                           <button onClick={() => navigate('/editar-producto', { state: { product: p } })} className="btn-outline" style={{ flex: 1, padding: '6px', fontSize: 12 }}>Editar</button>
                           <button onClick={() => handleDelete(p.productId)} className="btn-ghost" style={{ flex: 1, padding: '6px', fontSize: 12, color: 'var(--danger)' }}>Eliminar</button>

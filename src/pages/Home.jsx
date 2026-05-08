@@ -161,6 +161,11 @@ export default function Home() {
                       <div style={{ position: 'absolute', top: 8, left: 8 }}>
                         <span className="badge badge-navy" style={{ fontSize: 10 }}>{CONDITION_LABELS[p.condition] || p.condition}</span>
                       </div>
+                      {p.stock === 1 && (
+                        <div style={{ position: 'absolute', top: 8, right: 8 }}>
+                          <span style={{ fontSize: 10, fontWeight: 600, padding: '3px 8px', borderRadius: '100px', background: '#D97706', color: '#fff', whiteSpace: 'nowrap' }}>Última unidad</span>
+                        </div>
+                      )}
                     </div>
                     <div style={{ padding: '12px 14px' }}>
                       <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--gray-800)', lineHeight: 1.4, marginBottom: 4, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{p.title}</p>

@@ -121,7 +121,13 @@ export default function ProductDetail() {
 
             <div style={{ background: 'var(--gray-50)', borderRadius: 'var(--radius-lg)', padding: 20, border: '1px solid var(--gray-100)' }}>
               <p style={{ fontSize: 13, color: 'var(--gray-400)', marginBottom: 4 }}>Precio</p>
-              <p style={{ fontFamily: 'var(--font-display)', fontSize: 36, fontWeight: 700, color: 'var(--navy)' }}>${Number(product.price).toLocaleString('es-CO')}</p>
+              <p style={{ fontFamily: 'var(--font-display)', fontSize: 36, fontWeight: 700, color: 'var(--navy)', marginBottom: 10 }}>${Number(product.price).toLocaleString('es-CO')}</p>
+              {(product.stock === 0 || product.status === 'sold')
+                ? <span style={{ display: 'inline-block', fontSize: 12, fontWeight: 600, padding: '4px 12px', borderRadius: '100px', background: '#FDECEA', color: 'var(--danger)', border: '1px solid #F5C6C2' }}>Agotado</span>
+                : product.stock === 1
+                  ? <p style={{ fontSize: 13, fontWeight: 600, color: '#D97706', margin: 0 }}>¡Última unidad!</p>
+                  : <p style={{ fontSize: 13, color: 'var(--success)', margin: 0 }}>Stock disponible: {product.stock} unidades</p>
+              }
             </div>
 
             <div>
@@ -160,7 +166,7 @@ export default function ProductDetail() {
                 {cartMsg && cartMsg !== 'success' && (
                   <p style={{ fontSize: 12, color: 'var(--danger)' }}>⚠ {cartMsg}</p>
                 )}
-                <button onClick={handleAddToCart} className="btn-gold" style={{ width: '100%', padding: 15, fontSize: 15, justifyContent: 'center' }} disabled={addingCart}>
+                <button onClick={handleAddToCart} className="btn-gold" style={{ width: '100%', padding: 15, fontSize: 15, justifyContent: 'center' }} disabled={addingCart || product.stock === 0 || product.status === 'sold'}>
                   {addingCart ? 'Agregando...' : '🛒 Agregar al carrito'}
                 </button>
                 <button onClick={async () => {
