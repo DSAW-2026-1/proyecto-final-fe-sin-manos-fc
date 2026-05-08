@@ -151,19 +151,19 @@ export default function PublicPerfil() {
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               {reviews.map((r, i) => (
-                <div key={r.reviewId || r.review_id || i} className="card" style={{ padding: 20 }}>
+                <div key={r.reviewId || i} className="card" style={{ padding: 20 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
                     <div>
-                      <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--gray-800)', marginBottom: 4 }}>{r.buyerName || r.buyer_name}</p>
+                      <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--gray-800)', marginBottom: 4 }}>{r.buyerName}</p>
                       <StarRating value={r.rating} readonly size={15} />
                     </div>
                     <p style={{ fontSize: 11, color: 'var(--gray-400)' }}>
-                      {new Date(r.createdAt || r.created_at).toLocaleDateString('es-CO', { year: 'numeric', month: 'short', day: 'numeric' })}
+                      {new Date(r.createdAt).toLocaleDateString('es-CO', { year: 'numeric', month: 'short', day: 'numeric' })}
                     </p>
                   </div>
                   {r.comment && <p style={{ fontSize: 13, color: 'var(--gray-600)', lineHeight: 1.6 }}>{r.comment}</p>}
-                  {(r.productTitle || r.product_title) && (
-                    <p style={{ fontSize: 11, color: 'var(--gold)', marginTop: 8 }}>📦 {r.productTitle || r.product_title}</p>
+                  {r.productTitle && (
+                    <p style={{ fontSize: 11, color: 'var(--gold)', marginTop: 8 }}>📦 {r.productTitle}</p>
                   )}
                 </div>
               ))}
