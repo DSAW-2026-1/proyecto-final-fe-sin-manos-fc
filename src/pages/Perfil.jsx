@@ -145,6 +145,9 @@ export default function Perfil() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 6 }}>
                   <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 700, color: 'var(--navy)' }}>{currentUser?.name}</h2>
                   <span className={`badge ${currentUser?.isSeller ? 'badge-gold' : 'badge-navy'}`}>{currentUser?.isSeller ? 'Vendedor' : 'Comprador'}</span>
+                  {reviews.length < 5 && (
+                    <span style={{ fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: '100px', background: 'var(--gold-pale)', color: '#8B6B1A', border: '1px solid #E8C84A', whiteSpace: 'nowrap' }}>Nuevo</span>
+                  )}
                 </div>
                 <p style={{ fontSize: 13, color: 'var(--gray-400)', marginBottom: 4 }}>{currentUser?.email}</p>
                 {(profileData?.career || user?.career) && (
