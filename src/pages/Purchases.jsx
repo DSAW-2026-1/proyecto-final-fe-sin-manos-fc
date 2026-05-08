@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import { useApp } from '../context/AppContext'
-import { api } from '../api'
+import { api, convApi } from '../api'
 
 const STATUS_LABELS = {
   pending:   { label: 'Pendiente',  color: '#8B6B1A', bg: 'var(--gold-pale)' },
@@ -21,11 +21,179 @@ const STATUS_FILTERS = [
   { key: 'cancelled', label: 'Canceladas' },
 ]
 
+// Secuencia de estados para el historial visual
+const STATUS_SEQUENCE = [
+  { key: 'pending',   label: 'Pendiente',  desc: 'Solicitud enviada al vendedor' },
+  { key: 'confirmed', label: 'Confirmada', desc: 'El vendedor aceptó la orden' },
+  { key: 'delivered', label: 'Entregada',  desc: 'Producto entregado' },
+]
+
+const STATUS_ORDER = { pending: 0, confirmed: 1, delivered: 2, completed: 2, cancelled: -1 }
+
+function OrderCard({ order, expanded, onToggle, navigate }) {
+  const s = STATUS_LABELS[order.status] || STATUS_LABELS.pending
+  const currentIdx = STATUS_ORDER[order.status] ?? 0
+  const isCancelled = order.status === 'cancelled'
+  const [contacting, setContacting] = useState(false)
+
+  const handleContact = async (e) => {
+    e.stopPropagation()
+    setContacting(true)
+    const pid = order.product_id || order.productId
+    const sid = order.seller_id || order.sellerId
+    const res = await convApi.create({ productId: pid, sellerId: sid })
+    setContacting(false)
+    navigate('/mensajes', { state: { conversationId: res.data?.conversationId || null } })
+  }
+
+  return (
+    <div
+      className="card animate-fadeUp"
+      style={{ overflow: 'hidden', cursor: 'pointer', border: expanded ? '1.5px solid var(--navy)' : '1px solid var(--gray-100)', transition: 'border-color 0.15s' }}
+      onClick={onToggle}
+    >
+      {/* Fila resumen — siempre visible */}
+      <div style={{ padding: 18, display: 'flex', gap: 14, alignItems: 'center' }}>
+        <div style={{ width: 56, height: 56, borderRadius: 'var(--radius-md)', overflow: 'hidden', background: 'var(--gray-100)', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>
+          {order.image_url ? <img src={`http://localhost:4000${order.image_url}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : '📦'}
+        </div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--gray-800)', marginBottom: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{order.product_title}</p>
+          <p style={{ fontSize: 11, color: 'var(--gray-400)', marginBottom: 6 }}>Vendedor: {order.seller_name}</p>
+          <span style={{ fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: '100px', background: s.bg, color: s.color }}>{s.label}</span>
+        </div>
+        <div style={{ textAlign: 'right', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
+          <p style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 700, color: 'var(--navy)' }}>${Number(order.price).toLocaleString('es-CO')}</p>
+          <p style={{ fontSize: 11, color: 'var(--gray-400)' }}>{new Date(order.created_at).toLocaleDateString('es-CO')}</p>
+          <span style={{ fontSize: 13, color: 'var(--gray-400)', lineHeight: 1 }}>{expanded ? '▲' : '▼'}</span>
+        </div>
+      </div>
+
+      {/* Panel expandido */}
+      {expanded && (
+        <div
+          style={{ borderTop: '1px solid var(--gray-100)', background: 'var(--gray-50)', padding: 20 }}
+          onClick={e => e.stopPropagation()}
+        >
+          <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
+            {/* Imagen grande + info */}
+            <div style={{ flexShrink: 0 }}>
+              <div style={{ width: 120, height: 120, borderRadius: 'var(--radius-lg)', overflow: 'hidden', background: 'var(--gray-100)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 40 }}>
+                {order.image_url
+                  ? <img src={`http://localhost:4000${order.image_url}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  : '📦'}
+              </div>
+            </div>
+
+            <div style={{ flex: 1, minWidth: 180, display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {/* Vendedor */}
+              <div>
+                <p style={{ fontSize: 11, color: 'var(--gray-400)', marginBottom: 2 }}>Vendedor</p>
+                <button
+                  onClick={() => navigate(`/vendedor/${order.seller_id || order.sellerId}`)}
+                  style={{ background: 'none', border: 'none', padding: 0, fontSize: 13, fontWeight: 600, color: 'var(--navy)', cursor: 'pointer', fontFamily: 'var(--font-body)', textDecoration: 'underline' }}>
+                  {order.seller_name} →
+                </button>
+              </div>
+
+              {/* Precio detallado */}
+              <div>
+                <p style={{ fontSize: 11, color: 'var(--gray-400)', marginBottom: 2 }}>Precio</p>
+                <p style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 700, color: 'var(--navy)' }}>
+                  ${Number(order.price).toLocaleString('es-CO')}
+                </p>
+              </div>
+
+              {/* Fecha */}
+              <div>
+                <p style={{ fontSize: 11, color: 'var(--gray-400)', marginBottom: 2 }}>Fecha de solicitud</p>
+                <p style={{ fontSize: 13, color: 'var(--gray-800)' }}>
+                  {new Date(order.created_at).toLocaleDateString('es-CO', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                </p>
+              </div>
+
+              {/* N° orden */}
+              {order.order_id && (
+                <div>
+                  <p style={{ fontSize: 11, color: 'var(--gray-400)', marginBottom: 2 }}>N° de orden</p>
+                  <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--gray-600)', fontFamily: 'monospace' }}>#{order.order_id}</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Historial de estados */}
+          <div style={{ marginTop: 20 }}>
+            <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--gray-400)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 12 }}>Historial de estados</p>
+            {isCancelled ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: '#FDECEA', borderRadius: 'var(--radius-md)' }}>
+                <span style={{ fontSize: 16 }}>✕</span>
+                <div>
+                  <p style={{ fontSize: 13, fontWeight: 600, color: '#C0392B' }}>Cancelada</p>
+                  <p style={{ fontSize: 11, color: '#C0392B', opacity: 0.8 }}>Esta orden fue cancelada</p>
+                </div>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+                {STATUS_SEQUENCE.map((step, idx) => {
+                  const isDone = idx <= currentIdx
+                  const isActive = idx === currentIdx
+                  const isFuture = idx > currentIdx
+                  return (
+                    <div key={step.key} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+                      {/* Línea vertical + círculo */}
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0 }}>
+                        <div style={{
+                          width: 22, height: 22, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700,
+                          background: isDone ? (isActive ? 'var(--navy)' : '#1A7A4A') : 'var(--gray-100)',
+                          color: isDone ? 'var(--white)' : 'var(--gray-300)',
+                          border: isActive ? '2px solid var(--navy)' : 'none',
+                          flexShrink: 0,
+                        }}>
+                          {isDone && !isActive ? '✓' : idx + 1}
+                        </div>
+                        {idx < STATUS_SEQUENCE.length - 1 && (
+                          <div style={{ width: 2, height: 24, background: idx < currentIdx ? '#1A7A4A' : 'var(--gray-200)', margin: '2px 0' }} />
+                        )}
+                      </div>
+                      {/* Texto */}
+                      <div style={{ paddingTop: 2, paddingBottom: idx < STATUS_SEQUENCE.length - 1 ? 0 : 0 }}>
+                        <p style={{ fontSize: 13, fontWeight: isActive ? 700 : 500, color: isFuture ? 'var(--gray-300)' : (isActive ? 'var(--navy)' : 'var(--gray-700)'), marginBottom: 1 }}>
+                          {step.label}
+                        </p>
+                        <p style={{ fontSize: 11, color: isFuture ? 'var(--gray-300)' : 'var(--gray-400)', marginBottom: idx < STATUS_SEQUENCE.length - 1 ? 14 : 0 }}>
+                          {step.desc}
+                        </p>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Botón contactar */}
+          <div style={{ marginTop: 20, display: 'flex', justifyContent: 'flex-end' }}>
+            <button
+              onClick={handleContact}
+              disabled={contacting}
+              className="btn-outline"
+              style={{ padding: '8px 18px', fontSize: 13 }}>
+              {contacting ? 'Abriendo chat...' : '💬 Contactar vendedor'}
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
 export function Purchases() {
   const navigate = useNavigate()
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
   const [filterStatus, setFilterStatus] = useState('')
+  const [expandedId, setExpandedId] = useState(null)
 
   useEffect(() => {
     const params = filterStatus ? { status: filterStatus } : {}
@@ -33,6 +201,8 @@ export function Purchases() {
       .then(data => { setOrders(Array.isArray(data) ? data : []); setLoading(false) })
       .catch(() => setLoading(false))
   }, [filterStatus])
+
+  const handleToggle = (orderId) => setExpandedId(prev => prev === orderId ? null : orderId)
 
   return (
     <div className="page-container">
@@ -53,7 +223,7 @@ export function Purchases() {
           {STATUS_FILTERS.map(f => (
             <button
               key={f.key}
-              onClick={() => { setFilterStatus(f.key); setLoading(true) }}
+              onClick={() => { setFilterStatus(f.key); setLoading(true); setExpandedId(null) }}
               style={{
                 padding: '6px 14px', borderRadius: '100px', border: '1px solid',
                 fontSize: 12, fontWeight: 500, cursor: 'pointer', fontFamily: 'var(--font-body)',
@@ -81,25 +251,15 @@ export function Purchases() {
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            {orders.map((order, i) => {
-              const s = STATUS_LABELS[order.status] || STATUS_LABELS.pending
-              return (
-                <div key={order.order_id} className="card animate-fadeUp" style={{ animationDelay: `${i * 60}ms`, padding: 18, display: 'flex', gap: 14, alignItems: 'center' }}>
-                  <div style={{ width: 56, height: 56, borderRadius: 'var(--radius-md)', overflow: 'hidden', background: 'var(--gray-100)', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>
-                    {order.image_url ? <img src={`http://localhost:4000${order.image_url}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : '📦'}
-                  </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--gray-800)', marginBottom: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{order.product_title}</p>
-                    <p style={{ fontSize: 11, color: 'var(--gray-400)', marginBottom: 6 }}>Vendedor: {order.seller_name}</p>
-                    <span style={{ fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: '100px', background: s.bg, color: s.color }}>{s.label}</span>
-                  </div>
-                  <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                    <p style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 700, color: 'var(--navy)' }}>${Number(order.price).toLocaleString('es-CO')}</p>
-                    <p style={{ fontSize: 11, color: 'var(--gray-400)', marginTop: 4 }}>{new Date(order.created_at).toLocaleDateString('es-CO')}</p>
-                  </div>
-                </div>
-              )
-            })}
+            {orders.map((order, i) => (
+              <OrderCard
+                key={order.order_id}
+                order={order}
+                expanded={expandedId === order.order_id}
+                onToggle={() => handleToggle(order.order_id)}
+                navigate={navigate}
+              />
+            ))}
           </div>
         )}
       </div>
