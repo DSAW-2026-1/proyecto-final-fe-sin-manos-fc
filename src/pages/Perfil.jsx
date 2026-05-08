@@ -85,7 +85,7 @@ export default function Perfil() {
 
   const tabs = [
     { id: 'inventario', label: 'Mi Inventario' },
-    { id: 'reseñas', label: `Reseñas (${reviews.length})` },
+    ...(currentUser?.isSeller ? [{ id: 'reseñas', label: `Reseñas (${reviews.length})` }] : []),
   ]
 
   return (

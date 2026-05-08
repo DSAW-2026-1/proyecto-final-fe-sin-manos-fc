@@ -17,6 +17,7 @@ export default function CreateProduct() {
     price: editing?.price || '',
     categoryId: editing?.categoryId || '',
     condition: editing?.condition || '',
+    stock: editing?.stock || 1,
   })
   const [images, setImages] = useState([])
   const [previews, setPreviews] = useState(editing?.images || [])
@@ -57,6 +58,7 @@ export default function CreateProduct() {
     formData.append('price', form.price)
     formData.append('categoryId', form.categoryId)
     formData.append('condition', form.condition)
+    formData.append('stock', form.stock)
     images.forEach(img => formData.append('images', img))
 
     const res = editing
@@ -136,6 +138,19 @@ export default function CreateProduct() {
                 ))}
               </div>
               {errors.condition && <span className="input-error">{errors.condition}</span>}
+            </div>
+
+            <div className="input-group">
+              <label className="input-label">Stock disponible *</label>
+              <input
+                className="input-field"
+                type="number"
+                min={1}
+                placeholder="1"
+                value={form.stock}
+                onChange={e => set('stock', Math.max(1, parseInt(e.target.value) || 1))}
+                style={{ maxWidth: 160 }}
+              />
             </div>
 
             <div className="input-group">

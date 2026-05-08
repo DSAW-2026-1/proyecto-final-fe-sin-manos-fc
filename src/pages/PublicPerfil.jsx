@@ -59,7 +59,14 @@ export default function PublicPerfil() {
               : seller.name?.charAt(0)}
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 700, color: 'var(--navy)', marginBottom: 4 }}>{seller.name}</h1>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 4 }}>
+              <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 700, color: 'var(--navy)' }}>{seller.name}</h1>
+              {(reviews.length < 5 || parseFloat(seller.reputation || 0) === 0) && (
+                <span style={{ fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: '100px', background: 'var(--gold-pale)', color: '#8B6B1A', border: '1px solid #E8C84A', whiteSpace: 'nowrap' }}>
+                  Nuevo vendedor
+                </span>
+              )}
+            </div>
             {seller.university && (
               <p style={{ fontSize: 13, color: 'var(--gray-400)', marginBottom: 8 }}>{seller.university}</p>
             )}
