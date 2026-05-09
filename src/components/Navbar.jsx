@@ -17,6 +17,7 @@ export default function Navbar() {
     { label: 'Mis Compras',path: '/compras' },
     ...(user.isSeller ? [{ label: 'Mis Ventas', path: '/mis-ventas' }] : []),
     { label: 'Mi Perfil',  path: '/perfil' },
+    ...(user.role === 'admin' ? [{ label: 'Admin', path: '/admin' }] : []),
   ]
 
   const handleLogout = async () => { await logout(); navigate('/') }

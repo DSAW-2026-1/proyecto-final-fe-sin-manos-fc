@@ -40,6 +40,14 @@ export const api = {
   getCart: () => fetch(`${BASE}/cart`, { headers: headers() }).then(r => r.json()),
   addToCart: ({ productId, quantity = 1 }) => fetch(`${BASE}/cart/items`, { method: 'POST', headers: headers(), body: JSON.stringify({ productId, quantity }) }).then(r => r.json().then(d => ({ ok: r.ok, data: d }))),
   removeFromCart: (productId) => fetch(`${BASE}/cart/items/${productId}`, { method: 'DELETE', headers: headers() }).then(r => r.json().then(d => ({ ok: r.ok, data: d }))),
+
+  getDashboard: () => fetch(`${BASE}/admin/dashboard`, { headers: headers() }).then(r => r.json()),
+  getAdminUsers: () => fetch(`${BASE}/admin/users`, { headers: headers() }).then(r => r.json()),
+  suspendUser: (userId, suspended, reason) => fetch(`${BASE}/admin/users/${userId}/suspend`, { method: 'PATCH', headers: headers(), body: JSON.stringify({ suspended, reason }) }).then(r => r.json().then(d => ({ ok: r.ok, data: d }))),
+  deleteProductAdmin: (productId, reason) => fetch(`${BASE}/admin/products/${productId}`, { method: 'DELETE', headers: headers(), body: JSON.stringify({ reason }) }).then(r => r.json().then(d => ({ ok: r.ok, data: d }))),
+  getAdminReports: () => fetch(`${BASE}/admin/reports`, { headers: headers() }).then(r => r.json()),
+  updateReport: (reportId, status) => fetch(`${BASE}/admin/reports/${reportId}`, { method: 'PATCH', headers: headers(), body: JSON.stringify({ status }) }).then(r => r.json().then(d => ({ ok: r.ok, data: d }))),
+  createReport: (data) => fetch(`${BASE}/reports`, { method: 'POST', headers: headers(), body: JSON.stringify(data) }).then(r => r.json().then(d => ({ ok: r.ok, data: d }))),
 }
 
 export const convApi = {

@@ -23,6 +23,11 @@ export default function ProductDetail() {
   const [selectedImg, setSelectedImg] = useState(0)
   const [cartMsg, setCartMsg] = useState('')
   const [addingCart, setAddingCart] = useState(false)
+  const [reportOpen, setReportOpen] = useState(false)
+  const [reportReason, setReportReason] = useState('spam')
+  const [reportDesc, setReportDesc] = useState('')
+  const [reportLoading, setReportLoading] = useState(false)
+  const [reportSuccess, setReportSuccess] = useState(false)
 
   const isOwner = user && product && user.userId === product.seller?.id
 
@@ -66,6 +71,14 @@ export default function ProductDetail() {
       setCartMsg(res.data?.error || 'No se pudo agregar al carrito')
     }
     setTimeout(() => setCartMsg(''), 3000)
+  }
+
+  const handleReport = async () => {
+    setReportLoading(true)
+    await api.createReport({ targetId: id, targetType: 'product', reason: reportReason, description: reportDesc })
+    setReportLoading(false)
+    setReportSuccess(true)
+    setTimeout(() => { setReportOpen(false); setReportSuccess(false); setReportReason('spam'); setReportDesc('') }, 1800)
   }
 
   const handleHelpful = async (reviewId) => {
@@ -176,6 +189,9 @@ export default function ProductDetail() {
                   }} className="btn-outline" style={{ width: '100%', padding: 14, justifyContent: 'center' }}>
                   Contactar vendedor
                 </button>
+                <button onClick={() => setReportOpen(true)} style={{ background: 'none', border: 'none', fontSize: 12, color: 'var(--gray-400)', cursor: 'pointer', fontFamily: 'var(--font-body)', textAlign: 'center', padding: '4px 0', textDecoration: 'underline' }}>
+                  🚩 Reportar producto
+                </button>
               </div>
             )}
             {isOwner && (
@@ -267,6 +283,44 @@ export default function ProductDetail() {
           )}
         </div>
       </div>
+
+      {/* Modal: Reportar producto */}
+      {reportOpen && (
+        <>
+          <div onClick={() => setReportOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 900 }} />
+          <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', background: 'var(--white)', borderRadius: 'var(--radius-xl)', padding: 28, width: '90%', maxWidth: 400, zIndex: 1000, boxShadow: 'var(--shadow-lg)' }}>
+            <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 20, color: 'var(--navy)', marginBottom: 6 }}>Reportar producto</h3>
+            <p style={{ fontSize: 13, color: 'var(--gray-400)', marginBottom: 20 }}>Ayúdanos a mantener la comunidad segura</p>
+            {reportSuccess ? (
+              <div style={{ background: '#E6F4EC', borderRadius: 'var(--radius-md)', padding: '14px 18px', fontSize: 13, color: 'var(--success)', textAlign: 'center' }}>
+                ✓ Reporte enviado. Gracias por contribuir.
+              </div>
+            ) : (
+              <>
+                <div className="input-group" style={{ marginBottom: 16 }}>
+                  <label className="input-label">Motivo *</label>
+                  <select className="input-field" value={reportReason} onChange={e => setReportReason(e.target.value)}>
+                    <option value="spam">Spam o publicidad engañosa</option>
+                    <option value="inapropiado">Contenido inapropiado</option>
+                    <option value="falso">Información falsa o fraudulenta</option>
+                    <option value="otro">Otro</option>
+                  </select>
+                </div>
+                <div className="input-group" style={{ marginBottom: 20 }}>
+                  <label className="input-label">Descripción (opcional)</label>
+                  <textarea className="input-field" rows={3} placeholder="Describe el problema con más detalle..." value={reportDesc} onChange={e => setReportDesc(e.target.value)} style={{ resize: 'none' }} />
+                </div>
+                <div style={{ display: 'flex', gap: 10 }}>
+                  <button onClick={() => setReportOpen(false)} className="btn-ghost" style={{ flex: 1 }}>Cancelar</button>
+                  <button onClick={handleReport} disabled={reportLoading} className="btn-primary" style={{ flex: 1 }}>
+                    {reportLoading ? 'Enviando...' : 'Enviar reporte'}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </>
+      )}
     </div>
   )
 }

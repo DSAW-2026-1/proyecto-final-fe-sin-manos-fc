@@ -14,10 +14,16 @@ import Cart from './pages/Cart'
 import Checkout from './pages/Checkout'
 import MyVentas from './pages/MyVentas'
 import PublicPerfil from './pages/PublicPerfil'
+import AdminDashboard from './pages/admin/Dashboard'
 
 function ProtectedRoute({ children }) {
   const { user } = useApp()
   return user ? children : <Navigate to="/login" replace />
+}
+
+function AdminRoute({ children }) {
+  const { user } = useApp()
+  return user?.role === 'admin' ? children : <Navigate to="/home" replace />
 }
 
 function PublicRoute({ children }) {
@@ -52,6 +58,7 @@ function Layout() {
         <Route path="/checkout"       element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
         <Route path="/mis-ventas"     element={<ProtectedRoute><MyVentas /></ProtectedRoute>} />
         <Route path="/vendedor/:userId" element={<ProtectedRoute><PublicPerfil /></ProtectedRoute>} />
+        <Route path="/admin"          element={<ProtectedRoute><AdminRoute><AdminDashboard /></AdminRoute></ProtectedRoute>} />
         <Route path="*"               element={<Navigate to="/home" replace />} />
       </Routes>
       {showBottom && <BottomNav />}
