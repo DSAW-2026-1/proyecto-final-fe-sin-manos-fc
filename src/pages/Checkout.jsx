@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import { useApp } from '../context/AppContext'
 import { api } from '../api'
+import { API_URL } from '../config'
 
 const PAYMENT_METHODS = [
   { key: 'cash_pickup', label: 'Efectivo al recoger', icon: '💵', desc: 'Pagas en efectivo cuando recoges el producto con el vendedor' },
@@ -78,7 +79,7 @@ export default function Checkout() {
                     <div key={pid} style={{ display: 'flex', alignItems: 'center', gap: 12, opacity: isOwn ? 0.5 : 1 }}>
                       <div style={{ width: 48, height: 48, borderRadius: 'var(--radius-md)', overflow: 'hidden', background: 'var(--gray-100)', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>
                         {item.image_url
-                          ? <img src={`http://localhost:4000${item.image_url}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          ? <img src={`${API_URL}${item.image_url}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                           : '📦'}
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>

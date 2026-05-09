@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
 import CarreraSelector from '../components/CarreraSelector'
+import { API_URL } from '../config'
 
 export default function Register() {
   const [step, setStep] = useState(1)
@@ -79,7 +80,7 @@ export default function Register() {
         const fd = new FormData()
         if (form.carrera) fd.append('career', form.carrera)
         if (fotoFile) fd.append('photo', fotoFile)
-        await fetch(`http://localhost:4000/api/users/${userId}`, {
+        await fetch(`${API_URL}/api/users/${userId}`, {
           method: 'PUT',
           headers: { Authorization: `Bearer ${token}` },
           body: fd

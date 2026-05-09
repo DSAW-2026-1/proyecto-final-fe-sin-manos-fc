@@ -5,6 +5,7 @@ import StarRating from '../components/StarRating'
 import CarreraSelector from '../components/CarreraSelector'
 import { useApp } from '../context/AppContext'
 import { api } from '../api'
+import { API_URL } from '../config'
 
 export default function Perfil() {
   const { user, logout, refreshUser } = useApp()
@@ -81,8 +82,8 @@ export default function Perfil() {
 
   // URL foto de perfil
   const photoUrl = photoPreview ||
-    (profileData?.photoUrl ? `http://localhost:4000${profileData.photoUrl}` : null) ||
-    (user?.photoUrl ? `http://localhost:4000${user.photoUrl}` : null)
+    (profileData?.photoUrl ? `${API_URL}${profileData.photoUrl}` : null) ||
+    (user?.photoUrl ? `${API_URL}${user.photoUrl}` : null)
 
   const tabs = isAdmin ? [] : [
     { id: 'inventario', label: 'Mi Inventario' },

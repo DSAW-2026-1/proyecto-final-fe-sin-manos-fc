@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import { api } from '../api'
+import { API_URL } from '../config'
 
 export default function Cart() {
   const navigate = useNavigate()
@@ -70,7 +71,7 @@ export default function Cart() {
                       style={{ width: 64, height: 64, borderRadius: 'var(--radius-md)', overflow: 'hidden', background: 'var(--gray-100)', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, cursor: 'pointer' }}
                       onClick={() => navigate(`/producto/${pid}`)}>
                       {item.image_url
-                        ? <img src={`http://localhost:4000${item.image_url}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        ? <img src={`${API_URL}${item.image_url}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         : '📦'}
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>

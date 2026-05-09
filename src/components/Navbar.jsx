@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
 import NotificationBell from './NotificationBell'
+import { API_URL } from '../config'
 
 export default function Navbar() {
   const { user, logout } = useApp()
@@ -83,7 +84,7 @@ export default function Navbar() {
               overflow: 'hidden'
             }}>
               {user.photoUrl
-                ? <img src={`http://localhost:4000${user.photoUrl}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={e => e.target.style.display = 'none'} />
+                ? <img src={`${API_URL}${user.photoUrl}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={e => e.target.style.display = 'none'} />
                 : (user.name?.charAt(0) || 'U')}
             </button>
 

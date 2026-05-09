@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import StarRating from '../components/StarRating'
 import { api } from '../api'
+import { API_URL } from '../config'
 
 export default function PublicPerfil() {
   const { userId } = useParams()
@@ -55,7 +56,7 @@ export default function PublicPerfil() {
         <div className="card animate-fadeUp" style={{ padding: 32, marginBottom: 24, display: 'flex', gap: 24, alignItems: 'center', flexWrap: 'wrap' }}>
           <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'var(--gold-pale)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, fontWeight: 700, color: 'var(--navy)', flexShrink: 0, overflow: 'hidden' }}>
             {seller.photoUrl
-              ? <img src={`http://localhost:4000${seller.photoUrl}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              ? <img src={`${API_URL}${seller.photoUrl}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               : seller.name?.charAt(0)}
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>

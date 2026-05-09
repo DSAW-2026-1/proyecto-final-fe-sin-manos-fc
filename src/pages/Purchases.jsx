@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import { useApp } from '../context/AppContext'
 import { api, convApi } from '../api'
+import { API_URL } from '../config'
 
 const STATUS_LABELS = {
   pending:   { label: 'Pendiente',  color: '#8B6B1A', bg: 'var(--gold-pale)' },
@@ -55,7 +56,7 @@ function OrderCard({ order, expanded, onToggle, navigate }) {
       {/* Fila resumen — siempre visible */}
       <div style={{ padding: 18, display: 'flex', gap: 14, alignItems: 'center' }}>
         <div style={{ width: 56, height: 56, borderRadius: 'var(--radius-md)', overflow: 'hidden', background: 'var(--gray-100)', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>
-          {order.image_url ? <img src={`http://localhost:4000${order.image_url}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : '📦'}
+          {order.image_url ? <img src={`${API_URL}${order.image_url}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : '📦'}
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
           <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--gray-800)', marginBottom: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{order.product_title}</p>
@@ -80,7 +81,7 @@ function OrderCard({ order, expanded, onToggle, navigate }) {
             <div style={{ flexShrink: 0 }}>
               <div style={{ width: 120, height: 120, borderRadius: 'var(--radius-lg)', overflow: 'hidden', background: 'var(--gray-100)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 40 }}>
                 {order.image_url
-                  ? <img src={`http://localhost:4000${order.image_url}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  ? <img src={`${API_URL}${order.image_url}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   : '📦'}
               </div>
             </div>
@@ -378,7 +379,7 @@ export function OrderSuccess() {
                       <div key={pid} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, minWidth: 0 }}>
                           <div style={{ width: 32, height: 32, borderRadius: 6, overflow: 'hidden', background: 'var(--gray-100)', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>
-                            {item.image_url ? <img src={`http://localhost:4000${item.image_url}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : '📦'}
+                            {item.image_url ? <img src={`${API_URL}${item.image_url}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : '📦'}
                           </div>
                           <span style={{ fontSize: 12, color: 'var(--gray-800)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</span>
                         </div>

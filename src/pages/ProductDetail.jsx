@@ -4,6 +4,7 @@ import Navbar from '../components/Navbar'
 import StarRating from '../components/StarRating'
 import { useApp } from '../context/AppContext'
 import { api, convApi } from '../api'
+import { API_URL } from '../config'
 
 const CONDITION_LABELS = { new: 'Nuevo', used: 'Usado', like_new: 'Como nuevo', good: 'Buen estado', fair: 'Regular' }
 
@@ -154,7 +155,7 @@ export default function ProductDetail() {
               onClick={() => navigate(`/vendedor/${product.seller?.id}`)}>
               <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'var(--gold-pale)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, fontWeight: 700, color: 'var(--navy)', flexShrink: 0, overflow: 'hidden' }}>
                 {product.seller?.photoUrl
-                  ? <img src={`http://localhost:4000${product.seller.photoUrl}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  ? <img src={`${API_URL}${product.seller.photoUrl}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   : product.seller?.name?.charAt(0)}
               </div>
               <div style={{ flex: 1 }}>

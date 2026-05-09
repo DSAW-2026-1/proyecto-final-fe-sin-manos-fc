@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import { api } from '../api'
+import { API_URL } from '../config'
 
 const STATUS_LABELS = {
   pending:   { label: 'Pendiente',  color: '#8B6B1A', bg: 'var(--gold-pale)' },
@@ -63,7 +64,7 @@ export default function MyVentas() {
                   <div style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
                     <div style={{ width: 56, height: 56, borderRadius: 'var(--radius-md)', overflow: 'hidden', background: 'var(--gray-100)', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>
                       {order.image_url
-                        ? <img src={`http://localhost:4000${order.image_url}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        ? <img src={`${API_URL}${order.image_url}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         : '📦'}
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
