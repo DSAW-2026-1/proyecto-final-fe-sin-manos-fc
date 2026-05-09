@@ -61,7 +61,7 @@ export default function PublicPerfil() {
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 4 }}>
               <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 700, color: 'var(--navy)' }}>{seller.name}</h1>
-              {(reviews.length < 5 || parseFloat(seller.reputation || 0) === 0) && (
+              {(reviews.length < 5 || parseFloat(seller.reputation || 0) === 0) && seller.role !== 'admin' && (
                 <span style={{ fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: '100px', background: 'var(--gold-pale)', color: '#8B6B1A', border: '1px solid #E8C84A', whiteSpace: 'nowrap' }}>
                   Nuevo vendedor
                 </span>

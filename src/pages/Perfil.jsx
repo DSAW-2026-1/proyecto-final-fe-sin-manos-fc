@@ -40,6 +40,7 @@ export default function Perfil() {
   }, [user?.userId])
 
   const currentUser = profileData || user
+  const isAdmin = currentUser?.role === 'admin'
 
   const handlePhoto = (e) => {
     const file = e.target.files[0]
@@ -83,7 +84,7 @@ export default function Perfil() {
     (profileData?.photoUrl ? `http://localhost:4000${profileData.photoUrl}` : null) ||
     (user?.photoUrl ? `http://localhost:4000${user.photoUrl}` : null)
 
-  const tabs = [
+  const tabs = isAdmin ? [] : [
     { id: 'inventario', label: 'Mi Inventario' },
     ...(currentUser?.isSeller ? [{ id: 'reseñas', label: `Reseñas (${reviews.length})` }] : []),
   ]
@@ -144,8 +145,11 @@ export default function Perfil() {
               <>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 6 }}>
                   <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 700, color: 'var(--navy)' }}>{currentUser?.name}</h2>
-                  <span className={`badge ${currentUser?.isSeller ? 'badge-gold' : 'badge-navy'}`}>{currentUser?.isSeller ? 'Vendedor' : 'Comprador'}</span>
-                  {reviews.length < 5 && (
+                  {isAdmin
+                    ? <span style={{ fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: '100px', background: '#FDECEA', color: 'var(--danger)', border: '1px solid #F5C6C2' }}>Administrador</span>
+                    : <span className={`badge ${currentUser?.isSeller ? 'badge-gold' : 'badge-navy'}`}>{currentUser?.isSeller ? 'Vendedor' : 'Comprador'}</span>
+                  }
+                  {reviews.length < 5 && currentUser?.role !== 'admin' && (
                     <span style={{ fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: '100px', background: 'var(--gold-pale)', color: '#8B6B1A', border: '1px solid #E8C84A', whiteSpace: 'nowrap' }}>Nuevo</span>
                   )}
                 </div>
@@ -153,22 +157,24 @@ export default function Perfil() {
                 {(profileData?.career || user?.career) && (
                   <p style={{ fontSize: 13, color: 'var(--gray-600)', marginBottom: 10 }}>{profileData?.career || user?.career}</p>
                 )}
-                <div style={{ display: 'flex', gap: 24, marginBottom: 12, alignItems: 'flex-end' }}>
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
-                      <StarRating value={Math.round(parseFloat(avgRep))} readonly size={16} />
-                      <span style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 700, color: 'var(--navy)' }}>{avgRep}</span>
+                {!isAdmin && (
+                  <div style={{ display: 'flex', gap: 24, marginBottom: 12, alignItems: 'flex-end' }}>
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
+                        <StarRating value={Math.round(parseFloat(avgRep))} readonly size={16} />
+                        <span style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 700, color: 'var(--navy)' }}>{avgRep}</span>
+                      </div>
+                      <p style={{ fontSize: 11, color: 'var(--gray-400)' }}>Reputación ({reviews.length} reseña{reviews.length !== 1 ? 's' : ''})</p>
                     </div>
-                    <p style={{ fontSize: 11, color: 'var(--gray-400)' }}>Reputación ({reviews.length} reseña{reviews.length !== 1 ? 's' : ''})</p>
+                    <div>
+                      <p style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 700, color: 'var(--navy)' }}>{myProducts.length}</p>
+                      <p style={{ fontSize: 11, color: 'var(--gray-400)' }}>Publicaciones</p>
+                    </div>
                   </div>
-                  <div>
-                    <p style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 700, color: 'var(--navy)' }}>{myProducts.length}</p>
-                    <p style={{ fontSize: 11, color: 'var(--gray-400)' }}>Publicaciones</p>
-                  </div>
-                </div>
+                )}
                 <div style={{ display: 'flex', gap: 10 }}>
                   <button onClick={() => setEditing(true)} className="btn-outline" style={{ padding: '7px 18px', fontSize: 13 }}>Editar perfil</button>
-                  <button onClick={() => navigate('/crear-producto')} className="btn-primary" style={{ padding: '7px 18px', fontSize: 13 }}>+ Publicar</button>
+                  {!isAdmin && <button onClick={() => navigate('/crear-producto')} className="btn-primary" style={{ padding: '7px 18px', fontSize: 13 }}>+ Publicar</button>}
                 </div>
               </>
             )}
@@ -179,15 +185,28 @@ export default function Perfil() {
           </button>
         </div>
 
+        {/* Admin panel shortcut */}
+        {isAdmin && (
+          <div style={{ textAlign: 'center', padding: '48px 0' }}>
+            <p style={{ fontSize: 36, marginBottom: 16 }}>🛡️</p>
+            <p style={{ fontSize: 15, color: 'var(--gray-600)', marginBottom: 24 }}>Tienes acceso de administrador a la plataforma</p>
+            <button onClick={() => navigate('/admin')} className="btn-primary" style={{ padding: '14px 40px', fontSize: 15 }}>
+              Ir al Panel de Admin
+            </button>
+          </div>
+        )}
+
         {/* Tabs */}
-        <div style={{ display: 'flex', gap: 4, marginBottom: 20, background: 'var(--white)', borderRadius: 'var(--radius-lg)', padding: 6, border: '1px solid var(--gray-100)' }}>
-          {tabs.map(t => (
-            <button key={t.id} onClick={() => setActiveTab(t.id)} style={{ flex: 1, padding: 9, borderRadius: 'var(--radius-md)', background: activeTab === t.id ? 'var(--navy)' : 'transparent', color: activeTab === t.id ? 'var(--white)' : 'var(--gray-600)', border: 'none', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'var(--font-body)', transition: 'all 0.2s' }}>{t.label}</button>
-          ))}
-        </div>
+        {!isAdmin && (
+          <div style={{ display: 'flex', gap: 4, marginBottom: 20, background: 'var(--white)', borderRadius: 'var(--radius-lg)', padding: 6, border: '1px solid var(--gray-100)' }}>
+            {tabs.map(t => (
+              <button key={t.id} onClick={() => setActiveTab(t.id)} style={{ flex: 1, padding: 9, borderRadius: 'var(--radius-md)', background: activeTab === t.id ? 'var(--navy)' : 'transparent', color: activeTab === t.id ? 'var(--white)' : 'var(--gray-600)', border: 'none', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'var(--font-body)', transition: 'all 0.2s' }}>{t.label}</button>
+            ))}
+          </div>
+        )}
 
         {/* Inventario */}
-        {activeTab === 'inventario' && (
+        {!isAdmin && activeTab === 'inventario' && (
           <div className="animate-fadeIn">
             {loadingProducts ? (
               <p style={{ textAlign: 'center', color: 'var(--gray-400)', padding: '40px 0' }}>Cargando...</p>
@@ -234,7 +253,7 @@ export default function Perfil() {
         )}
 
         {/* Reseñas */}
-        {activeTab === 'reseñas' && (
+        {!isAdmin && activeTab === 'reseñas' && (
           <div className="animate-fadeIn" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             {reviews.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '60px 0' }}>

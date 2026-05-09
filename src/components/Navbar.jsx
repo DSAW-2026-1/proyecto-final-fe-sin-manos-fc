@@ -11,14 +11,20 @@ export default function Navbar() {
 
   if (!user) return null
 
-  const navLinks = [
-    { label: 'Catálogo',   path: '/home' },
-    { label: 'Mensajes',   path: '/mensajes' },
-    { label: 'Mis Compras',path: '/compras' },
-    ...(user.isSeller ? [{ label: 'Mis Ventas', path: '/mis-ventas' }] : []),
-    { label: 'Mi Perfil',  path: '/perfil' },
-    ...(user.role === 'admin' ? [{ label: 'Admin', path: '/admin' }] : []),
-  ]
+  const navLinks = user.role === 'admin'
+    ? [
+        { label: 'Catálogo',  path: '/home' },
+        { label: 'Mensajes',  path: '/mensajes' },
+        { label: 'Admin',     path: '/admin' },
+        { label: 'Mi Perfil', path: '/perfil' },
+      ]
+    : [
+        { label: 'Catálogo',   path: '/home' },
+        { label: 'Mensajes',   path: '/mensajes' },
+        { label: 'Mis Compras',path: '/compras' },
+        ...(user.isSeller ? [{ label: 'Mis Ventas', path: '/mis-ventas' }] : []),
+        { label: 'Mi Perfil',  path: '/perfil' },
+      ]
 
   const handleLogout = async () => { await logout(); navigate('/') }
 
@@ -56,12 +62,14 @@ export default function Navbar() {
 
         <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
           {/* Vender button */}
-          <button onClick={() => navigate('/crear-producto')} style={{
-            background: 'var(--gold)', color: 'var(--navy-dark)',
-            border: 'none', padding: '7px 14px', borderRadius: 'var(--radius-md)',
-            fontSize: 12, fontWeight: 600, cursor: 'pointer', flexShrink: 0,
-            minHeight: 36
-          }}>+ Vender</button>
+          {user.role !== 'admin' && (
+            <button onClick={() => navigate('/crear-producto')} style={{
+              background: 'var(--gold)', color: 'var(--navy-dark)',
+              border: 'none', padding: '7px 14px', borderRadius: 'var(--radius-md)',
+              fontSize: 12, fontWeight: 600, cursor: 'pointer', flexShrink: 0,
+              minHeight: 36
+            }}>+ Vender</button>
+          )}
 
           <NotificationBell />
 
@@ -92,13 +100,13 @@ export default function Navbar() {
                   <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--gray-100)' }}>
                     <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--gray-800)' }}>{user.name}</p>
                     <p style={{ fontSize: 11, color: 'var(--gray-400)', marginTop: 1 }}>{user.email}</p>
-                    <p style={{ fontSize: 10, color: 'var(--gold)', fontWeight: 600, marginTop: 2 }}>{user.isSeller ? 'Vendedor' : 'Comprador'}</p>
+                    <p style={{ fontSize: 10, color: 'var(--gold)', fontWeight: 600, marginTop: 2 }}>{user.role === 'admin' ? 'Administrador' : user.isSeller ? 'Vendedor' : 'Comprador'}</p>
                   </div>
                   {[
                     { label: 'Mi perfil', action: () => { navigate('/perfil'); setMenuOpen(false) } },
                     { label: 'Mis compras', action: () => { navigate('/compras'); setMenuOpen(false) } },
                     ...(user.isSeller ? [{ label: 'Mis ventas', action: () => { navigate('/mis-ventas'); setMenuOpen(false) } }] : []),
-                    { label: 'Publicar producto', action: () => { navigate('/crear-producto'); setMenuOpen(false) } },
+                    ...(user.role !== 'admin' ? [{ label: 'Publicar producto', action: () => { navigate('/crear-producto'); setMenuOpen(false) } }] : []),
                   ].map(item => (
                     <button key={item.label} onClick={item.action} style={{ width: '100%', textAlign: 'left', padding: '10px 16px', background: 'none', border: 'none', fontSize: 13, cursor: 'pointer', color: 'var(--gray-600)', fontFamily: 'var(--font-body)' }}>
                       {item.label}

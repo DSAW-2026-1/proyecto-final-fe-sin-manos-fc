@@ -8,7 +8,7 @@ export default function CreateProduct() {
   const navigate = useNavigate()
   const location = useLocation()
   const editing = location.state?.product || null
-  const { refreshUser } = useApp()
+  const { refreshUser, user } = useApp()
 
   const [categories, setCategories] = useState([])
   const [form, setForm] = useState({
@@ -26,8 +26,9 @@ export default function CreateProduct() {
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
+    if (user?.role === 'admin') { navigate('/home'); return }
     api.getCategories().then(cats => setCategories(cats)).catch(() => {})
-  }, [])
+  }, [user?.role])
 
   const set = (k, v) => setForm(p => ({ ...p, [k]: v }))
 
