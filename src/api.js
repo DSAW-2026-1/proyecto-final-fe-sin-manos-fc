@@ -33,6 +33,10 @@ export const api = {
   myVentas: () => fetch(`${BASE}/orders/selling`, { headers: headers() }).then(r => r.json()),
   updateOrderStatus: (orderId, status) => fetch(`${BASE}/orders/${orderId}/status`, { method: 'PATCH', headers: headers(), body: JSON.stringify({ status }) }).then(r => r.json().then(d => ({ ok: r.ok, data: d }))),
 
+  getNotifications: () => fetch(`${BASE}/notifications`, { headers: headers() }).then(r => r.json()),
+  markNotificationRead: (id) => fetch(`${BASE}/notifications/${id}/read`, { method: 'PATCH', headers: headers() }).then(r => r.json()),
+  markAllNotificationsRead: () => fetch(`${BASE}/notifications/read-all`, { method: 'PATCH', headers: headers() }).then(r => r.json()),
+
   getCart: () => fetch(`${BASE}/cart`, { headers: headers() }).then(r => r.json()),
   addToCart: ({ productId, quantity = 1 }) => fetch(`${BASE}/cart/items`, { method: 'POST', headers: headers(), body: JSON.stringify({ productId, quantity }) }).then(r => r.json().then(d => ({ ok: r.ok, data: d }))),
   removeFromCart: (productId) => fetch(`${BASE}/cart/items/${productId}`, { method: 'DELETE', headers: headers() }).then(r => r.json().then(d => ({ ok: r.ok, data: d }))),

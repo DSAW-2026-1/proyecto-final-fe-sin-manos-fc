@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
+import NotificationBell from './NotificationBell'
 
 export default function Navbar() {
   const { user, logout } = useApp()
@@ -60,6 +61,8 @@ export default function Navbar() {
             fontSize: 12, fontWeight: 600, cursor: 'pointer', flexShrink: 0,
             minHeight: 36
           }}>+ Vender</button>
+
+          <NotificationBell />
 
           {/* Avatar / menu */}
           <div style={{ position: 'relative' }}>
