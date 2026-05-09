@@ -227,7 +227,7 @@ export default function Landing() {
                 <p style={{ fontSize: 14, color: 'var(--gray-600)', marginBottom: 20 }}>¿Qué deseas hacer?</p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                   <button onClick={() => navigate('/registro-admin')} className="btn-gold" style={{ width: '100%', padding: 12 }}>Crear cuenta admin</button>
-                  <button onClick={() => navigate('/login')} className="btn-outline" style={{ width: '100%', padding: 12 }}>Iniciar sesión</button>
+                  <button onClick={() => navigate('/admin-login')} className="btn-outline" style={{ width: '100%', padding: 12 }}>Iniciar sesión como admin</button>
                 </div>
               </>
             ) : (
