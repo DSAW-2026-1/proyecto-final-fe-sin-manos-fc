@@ -15,6 +15,7 @@ import Checkout from './pages/Checkout'
 import MyVentas from './pages/MyVentas'
 import PublicPerfil from './pages/PublicPerfil'
 import AdminDashboard from './pages/admin/Dashboard'
+import AdminRegister from './pages/AdminRegister'
 
 function ProtectedRoute({ children }) {
   const { user } = useApp()
@@ -59,6 +60,7 @@ function Layout() {
         <Route path="/mis-ventas"     element={<ProtectedRoute><MyVentas /></ProtectedRoute>} />
         <Route path="/vendedor/:userId" element={<ProtectedRoute><PublicPerfil /></ProtectedRoute>} />
         <Route path="/admin"          element={<ProtectedRoute><AdminRoute><AdminDashboard /></AdminRoute></ProtectedRoute>} />
+        <Route path="/registro-admin" element={<AdminRegister />} />
         <Route path="*"               element={<Navigate to="/home" replace />} />
       </Routes>
       {showBottom && <BottomNav />}

@@ -1,7 +1,40 @@
+import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 export default function Landing() {
   const navigate = useNavigate()
+  const [adminModal, setAdminModal] = useState(false)
+  const [adminPass, setAdminPass] = useState('')
+  const [adminError, setAdminError] = useState('')
+  const clickTimesRef = useRef([])
+
+  useEffect(() => {
+    if (!adminModal) return
+    const onKey = (e) => { if (e.key === 'Escape') { setAdminModal(false); setAdminPass(''); setAdminError('') } }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [adminModal])
+
+  const handleSecretClick = () => {
+    const now = Date.now()
+    clickTimesRef.current = [...clickTimesRef.current.filter(t => now - t < 2000), now]
+    if (clickTimesRef.current.length >= 3) {
+      clickTimesRef.current = []
+      setAdminModal(true)
+      setAdminPass('')
+      setAdminError('')
+    }
+  }
+
+  const handleAdminEnter = () => {
+    if (adminPass === 'USabana2025Admin') {
+      setAdminModal(false)
+      navigate('/registro-admin')
+    } else {
+      setAdminError('Clave incorrecta')
+    }
+  }
+
   return (
     <div style={{ minHeight: '100vh', background: 'var(--white)' }}>
       {/* Nav */}
@@ -168,9 +201,41 @@ export default function Landing() {
       </section>
 
       {/* Footer */}
-      <footer style={{ background: 'var(--navy-dark)', padding: '32px 40px', textAlign: 'center' }}>
-        <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)' }}>UniPlace Market © 2025 · Universidad de La Sabana</p>
+      <footer style={{ background: 'var(--navy-dark)', padding: '32px 40px', textAlign: 'center', position: 'relative' }}>
+        <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)' }}>UniPlace Market © 2026 · Universidad de La Sabana</p>
+        <button
+          onClick={handleSecretClick}
+          aria-hidden="true"
+          style={{ position: 'absolute', bottom: 8, left: 8, width: 20, height: 20, background: 'transparent', border: 'none', cursor: 'default', padding: 0, outline: 'none' }}
+        />
       </footer>
+
+      {/* Modal: Acceso Administrador */}
+      {adminModal && (
+        <>
+          <div onClick={() => { setAdminModal(false); setAdminPass(''); setAdminError('') }} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 900 }} />
+          <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', background: 'var(--white)', borderRadius: 'var(--radius-xl)', padding: 28, width: '90%', maxWidth: 380, zIndex: 1000, boxShadow: '0 24px 60px rgba(0,0,0,0.4)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+              <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 20, color: 'var(--navy)' }}>Acceso Administrador</h3>
+              <button onClick={() => { setAdminModal(false); setAdminPass(''); setAdminError('') }} style={{ background: 'none', border: 'none', fontSize: 18, cursor: 'pointer', color: 'var(--gray-400)', fontFamily: 'var(--font-body)', lineHeight: 1 }}>✕</button>
+            </div>
+            <div className="input-group" style={{ marginBottom: 16 }}>
+              <label className="input-label">Clave de acceso</label>
+              <input
+                className="input-field"
+                type="password"
+                placeholder="••••••••••••••••"
+                value={adminPass}
+                onChange={e => { setAdminPass(e.target.value); setAdminError('') }}
+                onKeyDown={e => { if (e.key === 'Enter') handleAdminEnter() }}
+                autoFocus
+              />
+              {adminError && <span className="input-error">{adminError}</span>}
+            </div>
+            <button onClick={handleAdminEnter} className="btn-primary" style={{ width: '100%', padding: 12 }}>Ingresar</button>
+          </div>
+        </>
+      )}
     </div>
   )
 }
