@@ -146,7 +146,7 @@ export default function Perfil() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 6 }}>
                   <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 700, color: 'var(--navy)' }}>{currentUser?.name}</h2>
                   {isAdmin
-                    ? <span style={{ fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: '100px', background: '#FDECEA', color: 'var(--danger)', border: '1px solid #F5C6C2' }}>Administrador</span>
+                    ? <span style={{ fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: '100px', background: '#FDECEA', color: '#C0392B', border: '1px solid #F5C6C2' }}>Administrador</span>
                     : <span className={`badge ${currentUser?.isSeller ? 'badge-gold' : 'badge-navy'}`}>{currentUser?.isSeller ? 'Vendedor' : 'Comprador'}</span>
                   }
                   {reviews.length < 5 && currentUser?.role !== 'admin' && (
