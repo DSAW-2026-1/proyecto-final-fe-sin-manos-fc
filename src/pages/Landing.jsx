@@ -73,6 +73,75 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* Cómo funciona */}
+      <section style={{ padding: '80px 40px', background: 'var(--gray-50)' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 32, fontWeight: 700, color: 'var(--navy)', textAlign: 'center', marginBottom: 12 }}>Cómo funciona</h2>
+          <p style={{ textAlign: 'center', color: 'var(--gray-600)', marginBottom: 48, fontSize: 15 }}>En tres pasos ya puedes comprar o vender dentro de la comunidad Sabana</p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
+            {[
+              { step: '01', icon: '📧', title: 'Regístrate', desc: 'Crea tu cuenta con tu correo institucional @unisabana.edu.co' },
+              { step: '02', icon: '📦', title: 'Publica o encuentra', desc: 'Sube tus productos en segundos o explora el catálogo de la comunidad' },
+              { step: '03', icon: '🤝', title: 'Compra seguro', desc: 'Coordina con el vendedor dentro del campus con total confianza' },
+            ].map(({ step, icon, title, desc }) => (
+              <div key={step} style={{ background: 'var(--white)', borderRadius: 'var(--radius-xl)', padding: 32, border: '1px solid var(--gray-100)', position: 'relative', overflow: 'hidden' }}>
+                <div style={{ position: 'absolute', top: 16, right: 20, fontFamily: 'var(--font-display)', fontSize: 40, fontWeight: 700, color: 'var(--navy)', opacity: 0.06 }}>{step}</div>
+                <div style={{ fontSize: 36, marginBottom: 16 }}>{icon}</div>
+                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 700, color: 'var(--navy)', marginBottom: 10 }}>{title}</h3>
+                <p style={{ fontSize: 14, color: 'var(--gray-600)', lineHeight: 1.7 }}>{desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Categorías populares */}
+      <section style={{ padding: '80px 40px', background: 'var(--white)' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 32, fontWeight: 700, color: 'var(--navy)', textAlign: 'center', marginBottom: 12 }}>Categorías populares</h2>
+          <p style={{ textAlign: 'center', color: 'var(--gray-600)', marginBottom: 48, fontSize: 15 }}>Encuentra lo que buscas en nuestra comunidad</p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 16 }}>
+            {[
+              { icon: '📚', label: 'Libros y apuntes' },
+              { icon: '💻', label: 'Tecnología' },
+              { icon: '🎒', label: 'Útiles' },
+              { icon: '👕', label: 'Ropa' },
+              { icon: '🎮', label: 'Entretenimiento' },
+              { icon: '🏠', label: 'Hogar' },
+            ].map(({ icon, label }) => (
+              <div key={label} style={{ background: 'var(--gray-50)', borderRadius: 'var(--radius-lg)', padding: '24px 12px', border: '1px solid var(--gray-100)', textAlign: 'center', cursor: 'pointer', transition: 'all 0.15s' }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--gold)'; e.currentTarget.style.background = 'var(--gold-pale)' }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--gray-100)'; e.currentTarget.style.background = 'var(--gray-50)' }}>
+                <div style={{ fontSize: 32, marginBottom: 10 }}>{icon}</div>
+                <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--navy)', lineHeight: 1.3 }}>{label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ¿Por qué UniPlace Market? */}
+      <section style={{ padding: '80px 40px', background: 'var(--navy-dark)' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 32, fontWeight: 700, color: 'var(--white)', textAlign: 'center', marginBottom: 12 }}>¿Por qué UniPlace Market?</h2>
+          <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.55)', marginBottom: 48, fontSize: 15 }}>Diseñado para la comunidad Sabana, por la comunidad Sabana</p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
+            {[
+              { icon: '🔒', title: 'Solo estudiantes Unisabana', desc: 'Acceso exclusivo con correo @unisabana.edu.co' },
+              { icon: '⚡', title: 'Transacciones rápidas', desc: 'Coordina entregas dentro del campus al instante' },
+              { icon: '💬', title: 'Chat directo', desc: 'Habla con el vendedor sin intermediarios' },
+              { icon: '⭐', title: 'Sistema de reputación', desc: 'Reseñas reales de la comunidad universitaria' },
+            ].map(({ icon, title, desc }) => (
+              <div key={title} style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 'var(--radius-xl)', padding: 28, border: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(8px)' }}>
+                <div style={{ fontSize: 32, marginBottom: 14 }}>{icon}</div>
+                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 700, color: 'var(--white)', marginBottom: 8 }}>{title}</h3>
+                <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', lineHeight: 1.6 }}>{desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Acerca de */}
       <section id="acerca" style={{ padding: '80px 40px', maxWidth: 1100, margin: '0 auto' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'center' }}>
@@ -99,9 +168,8 @@ export default function Landing() {
       </section>
 
       {/* Footer */}
-      <footer style={{ background: 'var(--navy-dark)', padding: '40px', textAlign: 'center' }}>
-        <p style={{ fontFamily: 'var(--font-display)', fontSize: 16, color: 'var(--white)', marginBottom: 8 }}>Sabana <span style={{ color: 'var(--gold)' }}>Market</span></p>
-        <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>Universidad de La Sabana © 2025</p>
+      <footer style={{ background: 'var(--navy-dark)', padding: '32px 40px', textAlign: 'center' }}>
+        <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)' }}>UniPlace Market © 2025 · Universidad de La Sabana</p>
       </footer>
     </div>
   )
