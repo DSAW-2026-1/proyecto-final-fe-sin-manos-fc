@@ -7,6 +7,7 @@ export default function Login() {
   const [password, setPassword] = useState('')
   const [errors, setErrors] = useState({})
   const [apiError, setApiError] = useState('')
+  const [suspendedInfo, setSuspendedInfo] = useState(null)
   const [loading, setLoading] = useState(false)
   const { login } = useApp()
   const navigate = useNavigate()
@@ -25,9 +26,19 @@ export default function Login() {
     setApiError(''); setErrors({})
     if (!validate()) return
     setLoading(true)
+    setSuspendedInfo(null)
     const res = await login(email, password)
     setLoading(false)
     if (!res.ok) {
+      if (res.status === 403) {
+        const d = res.data || {}
+        setSuspendedInfo({
+          until: d.suspended_until,
+          reason: d.reason,
+          evidence: d.evidence,
+        })
+        return
+      }
       if (res.status === 401) setApiError('Credenciales incorrectas. Verifica tu correo y contraseña.')
       else if (res.status === 400) setApiError('Email y contraseña son requeridos.')
       else setApiError('Error del servidor. Intenta de nuevo.')
@@ -53,6 +64,18 @@ export default function Login() {
           <p style={{ fontSize: 13, color: 'var(--gray-400)', marginBottom: 28 }}>Ingresa y comienza a comprar ahora</p>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+            {suspendedInfo && (
+              <div style={{ background: '#FDECEA', border: '1px solid #F5C6C2', borderRadius: 'var(--radius-md)', padding: '12px 14px', fontSize: 13, color: 'var(--danger)' }}>
+                <p style={{ fontWeight: 600, marginBottom: 4 }}>🔒 Cuenta suspendida</p>
+                {suspendedInfo.until && (
+                  <p style={{ marginBottom: 2 }}>
+                    Hasta: <strong>{new Date(suspendedInfo.until).toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</strong>
+                  </p>
+                )}
+                {suspendedInfo.reason && <p style={{ marginBottom: 2 }}>Motivo: {suspendedInfo.reason}</p>}
+                {suspendedInfo.evidence && <p>Evidencia: {suspendedInfo.evidence}</p>}
+              </div>
+            )}
             {apiError && (
               <div style={{ background: '#FDECEA', border: '1px solid #F5C6C2', borderRadius: 'var(--radius-md)', padding: '10px 14px', fontSize: 13, color: 'var(--danger)', display: 'flex', alignItems: 'center', gap: 8 }}>
                 ⚠ {apiError}

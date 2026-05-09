@@ -13,7 +13,9 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true)
 
   const [suspendModal, setSuspendModal] = useState(null)
-  const [suspendReason, setSuspendReason] = useState('')
+  const [suspendForm, setSuspendForm] = useState({ reason: '', evidence: '', duration: 1, durationUnit: 'Días' })
+  const [deleteUserModal, setDeleteUserModal] = useState(null)
+  const [deleteUserForm, setDeleteUserForm] = useState({ reason: '', evidence: '' })
   const [deleteModal, setDeleteModal] = useState(null)
   const [deleteReason, setDeleteReason] = useState('')
   const [actionLoading, setActionLoading] = useState(false)
@@ -57,10 +59,24 @@ export default function AdminDashboard() {
 
   const handleSuspend = async () => {
     setActionLoading(true)
-    await api.suspendUser(suspendModal.user.id, !suspendModal.user.suspended, suspendReason)
+    await api.suspendUser(suspendModal.user.id, true, suspendForm.reason, {
+      action: 'suspend', evidence: suspendForm.evidence,
+      duration: suspendForm.duration, durationUnit: suspendForm.durationUnit,
+    })
     setActionLoading(false)
     setSuspendModal(null)
-    setSuspendReason('')
+    setSuspendForm({ reason: '', evidence: '', duration: 1, durationUnit: 'Días' })
+    refreshUsers()
+  }
+
+  const handleDeleteUser = async () => {
+    setActionLoading(true)
+    await api.suspendUser(deleteUserModal.user.id, true, deleteUserForm.reason, {
+      action: 'delete', evidence: deleteUserForm.evidence,
+    })
+    setActionLoading(false)
+    setDeleteUserModal(null)
+    setDeleteUserForm({ reason: '', evidence: '' })
     refreshUsers()
   }
 
@@ -155,14 +171,22 @@ export default function AdminDashboard() {
                           {new Date(u.createdAt || u.created_at).toLocaleDateString('es-CO', { year: 'numeric', month: 'short', day: 'numeric' })}
                         </td>
                         <td style={{ padding: '13px 14px' }}>
-                          <button onClick={() => { setSuspendModal({ user: u }); setSuspendReason('') }} style={{
-                            background: u.suspended ? 'var(--success)' : 'var(--danger)',
-                            color: 'var(--white)', border: 'none', padding: '6px 14px',
-                            borderRadius: 'var(--radius-sm)', fontSize: 12, cursor: 'pointer',
-                            fontFamily: 'var(--font-body)', fontWeight: 600
-                          }}>
-                            {u.suspended ? 'Reactivar' : 'Suspender'}
-                          </button>
+                          <div style={{ display: 'flex', gap: 6 }}>
+                            <button onClick={() => { setSuspendModal({ user: u }); setSuspendForm({ reason: '', evidence: '', duration: 1, durationUnit: 'Días' }) }} style={{
+                              background: '#D97706', color: 'var(--white)', border: 'none', padding: '6px 12px',
+                              borderRadius: 'var(--radius-sm)', fontSize: 12, cursor: 'pointer',
+                              fontFamily: 'var(--font-body)', fontWeight: 600
+                            }}>
+                              {u.suspended ? 'Reactivar' : 'Suspender'}
+                            </button>
+                            <button onClick={() => { setDeleteUserModal({ user: u }); setDeleteUserForm({ reason: '', evidence: '' }) }} style={{
+                              background: 'var(--danger)', color: 'var(--white)', border: 'none', padding: '6px 12px',
+                              borderRadius: 'var(--radius-sm)', fontSize: 12, cursor: 'pointer',
+                              fontFamily: 'var(--font-body)', fontWeight: 600
+                            }}>
+                              Eliminar
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -237,32 +261,70 @@ export default function AdminDashboard() {
         )}
       </div>
 
-      {/* Modal: Suspender / Reactivar */}
+      {/* Modal: Suspender usuario */}
       {suspendModal && (
         <>
           <div onClick={() => setSuspendModal(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 900 }} />
-          <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', background: 'var(--white)', borderRadius: 'var(--radius-xl)', padding: 28, width: '90%', maxWidth: 420, zIndex: 1000, boxShadow: 'var(--shadow-lg)' }}>
-            <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 20, color: 'var(--navy)', marginBottom: 8 }}>
-              {suspendModal.user.suspended ? 'Reactivar cuenta' : 'Suspender cuenta'}
+          <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', background: 'var(--white)', borderRadius: 'var(--radius-xl)', padding: 28, width: '90%', maxWidth: 460, zIndex: 1000, boxShadow: 'var(--shadow-lg)', maxHeight: '90vh', overflowY: 'auto' }}>
+            <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 20, color: 'var(--navy)', marginBottom: 20 }}>
+              Suspender usuario: {suspendModal.user.name}
             </h3>
-            <p style={{ fontSize: 13, color: 'var(--gray-600)', marginBottom: 20 }}>
-              {suspendModal.user.suspended
-                ? `¿Reactivar la cuenta de ${suspendModal.user.name}?`
-                : `¿Suspender la cuenta de ${suspendModal.user.name}?`}
-            </p>
-            <div className="input-group" style={{ marginBottom: 20 }}>
-              <label className="input-label">Motivo {suspendModal.user.suspended ? '(opcional)' : '*'}</label>
-              <textarea className="input-field" rows={3} placeholder="Describe el motivo..." value={suspendReason} onChange={e => setSuspendReason(e.target.value)} style={{ resize: 'none' }} />
+            <div className="input-group" style={{ marginBottom: 14 }}>
+              <label className="input-label">Motivo de suspensión *</label>
+              <textarea className="input-field" rows={3} placeholder="Describe el motivo..." value={suspendForm.reason} onChange={e => setSuspendForm(p => ({ ...p, reason: e.target.value }))} style={{ resize: 'none' }} />
+            </div>
+            <div className="input-group" style={{ marginBottom: 14 }}>
+              <label className="input-label">Evidencias (opcional)</label>
+              <textarea className="input-field" rows={2} placeholder="URL de evidencia, descripción del incidente..." value={suspendForm.evidence} onChange={e => setSuspendForm(p => ({ ...p, evidence: e.target.value }))} style={{ resize: 'none' }} />
+            </div>
+            <div style={{ marginBottom: 20 }}>
+              <label className="input-label" style={{ display: 'block', marginBottom: 6 }}>Duración</label>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <input type="number" min={1} className="input-field" style={{ width: 90 }} value={suspendForm.duration} onChange={e => setSuspendForm(p => ({ ...p, duration: e.target.value }))} />
+                <select className="input-field" style={{ flex: 1 }} value={suspendForm.durationUnit} onChange={e => setSuspendForm(p => ({ ...p, durationUnit: e.target.value }))}>
+                  <option>Minutos</option>
+                  <option>Horas</option>
+                  <option>Días</option>
+                </select>
+              </div>
             </div>
             <div style={{ display: 'flex', gap: 10 }}>
               <button onClick={() => setSuspendModal(null)} className="btn-ghost" style={{ flex: 1 }}>Cancelar</button>
-              <button onClick={handleSuspend} disabled={actionLoading} style={{
-                flex: 1, background: suspendModal.user.suspended ? 'var(--success)' : 'var(--danger)',
-                color: 'var(--white)', border: 'none', padding: '11px 0',
-                borderRadius: 'var(--radius-md)', fontSize: 14, cursor: 'pointer',
-                fontFamily: 'var(--font-body)', fontWeight: 600
+              <button onClick={handleSuspend} disabled={actionLoading || !suspendForm.reason.trim()} className="btn-gold" style={{ flex: 1, padding: '11px 0' }}>
+                {actionLoading ? 'Procesando...' : 'Confirmar suspensión'}
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Modal: Eliminar usuario */}
+      {deleteUserModal && (
+        <>
+          <div onClick={() => setDeleteUserModal(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 900 }} />
+          <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', background: 'var(--white)', borderRadius: 'var(--radius-xl)', padding: 28, width: '90%', maxWidth: 460, zIndex: 1000, boxShadow: 'var(--shadow-lg)' }}>
+            <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 20, color: 'var(--danger)', marginBottom: 12 }}>
+              ⚠ Eliminar usuario: {deleteUserModal.user.name}
+            </h3>
+            <div style={{ background: '#FDECEA', border: '1px solid #F5C6C2', borderRadius: 'var(--radius-md)', padding: '10px 14px', fontSize: 13, color: 'var(--danger)', marginBottom: 20 }}>
+              Esta acción es permanente e irreversible
+            </div>
+            <div className="input-group" style={{ marginBottom: 14 }}>
+              <label className="input-label">Motivo de eliminación *</label>
+              <textarea className="input-field" rows={3} placeholder="Describe el motivo..." value={deleteUserForm.reason} onChange={e => setDeleteUserForm(p => ({ ...p, reason: e.target.value }))} style={{ resize: 'none' }} />
+            </div>
+            <div className="input-group" style={{ marginBottom: 20 }}>
+              <label className="input-label">Evidencias (opcional)</label>
+              <textarea className="input-field" rows={2} placeholder="URL de evidencia, descripción del incidente..." value={deleteUserForm.evidence} onChange={e => setDeleteUserForm(p => ({ ...p, evidence: e.target.value }))} style={{ resize: 'none' }} />
+            </div>
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button onClick={() => setDeleteUserModal(null)} className="btn-ghost" style={{ flex: 1 }}>Cancelar</button>
+              <button onClick={handleDeleteUser} disabled={actionLoading || !deleteUserForm.reason.trim()} style={{
+                flex: 1, background: 'var(--danger)', color: 'var(--white)', border: 'none',
+                padding: '11px 0', borderRadius: 'var(--radius-md)', fontSize: 14,
+                cursor: 'pointer', fontFamily: 'var(--font-body)', fontWeight: 600
               }}>
-                {actionLoading ? 'Procesando...' : suspendModal.user.suspended ? 'Reactivar' : 'Suspender'}
+                {actionLoading ? 'Eliminando...' : 'Eliminar permanentemente'}
               </button>
             </div>
           </div>
