@@ -56,7 +56,7 @@ function OrderCard({ order, expanded, onToggle, navigate }) {
       {/* Fila resumen — siempre visible */}
       <div style={{ padding: 18, display: 'flex', gap: 14, alignItems: 'center' }}>
         <div style={{ width: 56, height: 56, borderRadius: 'var(--radius-md)', overflow: 'hidden', background: 'var(--gray-100)', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>
-          {order.image_url ? <img src={`${API_URL}${order.image_url}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : '📦'}
+          {order.image_url ? <img src={order.image_url?.startsWith('data:') || order.image_url?.startsWith('http') ? order.image_url : API_URL + order.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : '📦'}
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
           <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--gray-800)', marginBottom: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{order.product_title}</p>
@@ -64,7 +64,10 @@ function OrderCard({ order, expanded, onToggle, navigate }) {
           <span style={{ fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: '100px', background: s.bg, color: s.color }}>{s.label}</span>
         </div>
         <div style={{ textAlign: 'right', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
-          <p style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 700, color: 'var(--navy)' }}>${Number(order.price).toLocaleString('es-CO')}</p>
+          <p style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 700, color: 'var(--navy)' }}>
+              ${(Number(order.price) * (order.quantity || 1)).toLocaleString('es-CO')}
+              {(order.quantity || 1) > 1 && <span style={{ fontSize: 12, fontWeight: 400, color: 'var(--gray-400)', marginLeft: 4 }}>({order.quantity} und.)</span>}
+            </p>
           <p style={{ fontSize: 11, color: 'var(--gray-400)' }}>{new Date(order.created_at).toLocaleDateString('es-CO')}</p>
           <span style={{ fontSize: 13, color: 'var(--gray-400)', lineHeight: 1 }}>{expanded ? '▲' : '▼'}</span>
         </div>
@@ -81,7 +84,7 @@ function OrderCard({ order, expanded, onToggle, navigate }) {
             <div style={{ flexShrink: 0 }}>
               <div style={{ width: 120, height: 120, borderRadius: 'var(--radius-lg)', overflow: 'hidden', background: 'var(--gray-100)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 40 }}>
                 {order.image_url
-                  ? <img src={`${API_URL}${order.image_url}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  ? <img src={order.image_url?.startsWith('data:') || order.image_url?.startsWith('http') ? order.image_url : API_URL + order.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   : '📦'}
               </div>
             </div>
@@ -99,11 +102,18 @@ function OrderCard({ order, expanded, onToggle, navigate }) {
 
               {/* Precio detallado */}
               <div>
-                <p style={{ fontSize: 11, color: 'var(--gray-400)', marginBottom: 2 }}>Precio</p>
+                <p style={{ fontSize: 11, color: 'var(--gray-400)', marginBottom: 2 }}>Precio total</p>
                 <p style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 700, color: 'var(--navy)' }}>
-                  ${Number(order.price).toLocaleString('es-CO')}
+                  ${(Number(order.price) * (order.quantity || 1)).toLocaleString('es-CO')}
                 </p>
               </div>
+
+              {(order.quantity || 1) > 1 && (
+                <div>
+                  <p style={{ fontSize: 11, color: 'var(--gray-400)', marginBottom: 2 }}>Cantidad</p>
+                  <p style={{ fontSize: 13, color: 'var(--gray-800)' }}>{order.quantity} unidades</p>
+                </div>
+              )}
 
               {/* Fecha */}
               <div>
