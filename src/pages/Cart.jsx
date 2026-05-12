@@ -80,7 +80,7 @@ export default function Cart() {
                         onClick={() => navigate(`/producto/${pid}`)}>
                         {item.title}
                       </p>
-                      <p style={{ fontSize: 12, color: 'var(--gray-400)', marginBottom: 6 }}>
+                      <p style={{ fontSize: 12, color: 'var(--gray-400)', marginBottom: 2 }}>
                         Vendedor:{' '}
                         <span
                           style={{ color: 'var(--navy)', cursor: 'pointer', textDecoration: 'underline' }}
@@ -88,8 +88,11 @@ export default function Cart() {
                           {item.seller_name}
                         </span>
                       </p>
+                      <p style={{ fontSize: 12, color: 'var(--gray-400)', marginBottom: 6 }}>
+                        Cantidad: {item.quantity || 1}
+                      </p>
                       <p style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 700, color: 'var(--navy)' }}>
-                        ${Number(item.price).toLocaleString('es-CO')}
+                        ${(Number(item.price) * (item.quantity || 1)).toLocaleString('es-CO')}
                       </p>
                     </div>
                     <button

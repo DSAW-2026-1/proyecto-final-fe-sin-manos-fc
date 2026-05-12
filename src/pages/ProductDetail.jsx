@@ -24,6 +24,7 @@ export default function ProductDetail() {
   const [selectedImg, setSelectedImg] = useState(0)
   const [cartMsg, setCartMsg] = useState('')
   const [addingCart, setAddingCart] = useState(false)
+  const [quantity, setQuantity] = useState(1)
   const [reportOpen, setReportOpen] = useState(false)
   const [reportReason, setReportReason] = useState('spam')
   const [reportDesc, setReportDesc] = useState('')
@@ -64,7 +65,7 @@ export default function ProductDetail() {
   const handleAddToCart = async () => {
     setAddingCart(true)
     setCartMsg('')
-    const res = await api.addToCart({ productId: id })
+    const res = await api.addToCart({ productId: id, quantity })
     setAddingCart(false)
     if (res.ok) {
       setCartMsg('success')
@@ -179,6 +180,21 @@ export default function ProductDetail() {
                 )}
                 {cartMsg && cartMsg !== 'success' && (
                   <p style={{ fontSize: 12, color: 'var(--danger)' }}>⚠ {cartMsg}</p>
+                )}
+                {product.stock > 0 && product.status !== 'sold' && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <label style={{ fontSize: 13, color: 'var(--gray-600)', whiteSpace: 'nowrap' }}>Cantidad:</label>
+                    <input
+                      type="number"
+                      min={1}
+                      max={product.stock}
+                      value={quantity}
+                      onChange={e => setQuantity(Math.min(product.stock, Math.max(1, Number(e.target.value))))}
+                      className="input-field"
+                      style={{ width: 72, padding: '8px 10px', textAlign: 'center' }}
+                    />
+                    <span style={{ fontSize: 12, color: 'var(--gray-400)' }}>Máx. {product.stock}</span>
+                  </div>
                 )}
                 <button onClick={handleAddToCart} className="btn-gold" style={{ width: '100%', padding: 15, fontSize: 15, justifyContent: 'center' }} disabled={addingCart || product.stock === 0 || product.status === 'sold'}>
                   {addingCart ? 'Agregando...' : '🛒 Agregar al carrito'}
