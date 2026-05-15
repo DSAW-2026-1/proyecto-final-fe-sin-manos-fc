@@ -129,7 +129,7 @@ export default function AdminDashboard() {
         {/* Tabs */}
         <div style={{ display: 'flex', gap: 0, borderBottom: '1px solid var(--gray-100)', marginBottom: 24 }}>
           {TABS.map((t, i) => (
-            <button key={t} onClick={() => setTab(i)} style={{
+            <button key={t} onClick={() => { setTab(i); if (i === 1) refreshProducts() }} style={{
               background: 'none', border: 'none', padding: '10px 24px', fontSize: 14,
               fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)',
               color: tab === i ? 'var(--navy)' : 'var(--gray-400)',
