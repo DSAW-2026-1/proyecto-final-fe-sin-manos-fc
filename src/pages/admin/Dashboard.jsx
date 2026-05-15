@@ -61,7 +61,7 @@ export default function AdminDashboard() {
     setActionLoading(true)
     const unitMap = { 'Minutos': 'minutes', 'Horas': 'hours', 'Días': 'days' }
     const durationUnitEn = unitMap[suspendForm.durationUnit] || 'days'
-    await api.suspendUser(suspendModal.user.id, true, suspendForm.reason, {
+    await api.suspendUser(suspendModal.user.userId, true, suspendForm.reason, {
       action: 'suspend', evidence: suspendForm.evidence,
       duration: suspendForm.duration, durationUnit: durationUnitEn,
     })
@@ -73,7 +73,7 @@ export default function AdminDashboard() {
 
   const handleDeleteUser = async () => {
     setActionLoading(true)
-    await api.suspendUser(deleteUserModal.user.id, true, deleteUserForm.reason, {
+    await api.suspendUser(deleteUserModal.user.userId, true, deleteUserForm.reason, {
       action: 'delete', evidence: deleteUserForm.evidence,
     })
     setActionLoading(false)
