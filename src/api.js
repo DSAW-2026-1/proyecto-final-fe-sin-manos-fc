@@ -45,6 +45,7 @@ export const api = {
   getAdminUsers: () => fetch(`${BASE}/admin/users`, { headers: headers() }).then(r => r.json()),
   suspendUser: (userId, suspended, reason, extra = {}) => fetch(`${BASE}/admin/users/${userId}/suspend`, { method: 'PATCH', headers: headers(), body: JSON.stringify({ suspended, reason, ...extra }) }).then(r => r.json().then(d => ({ ok: r.ok, data: d }))),
   deleteUser: (userId, reason, evidence) => fetch(`${BASE}/admin/users/${userId}`, { method: 'DELETE', headers: headers(), body: JSON.stringify({ reason, evidence }) }).then(r => r.json().then(d => ({ ok: r.ok, data: d }))),
+  getAdminProducts: () => fetch(`${BASE}/admin/products`, { headers: headers() }).then(r => r.json()),
   deleteProductAdmin: (productId, reason) => fetch(`${BASE}/admin/products/${productId}`, { method: 'DELETE', headers: headers(), body: JSON.stringify({ reason }) }).then(r => r.json().then(d => ({ ok: r.ok, data: d }))),
   getAdminReports: () => fetch(`${BASE}/admin/reports`, { headers: headers() }).then(r => r.json()),
   updateReport: (reportId, status) => fetch(`${BASE}/admin/reports/${reportId}`, { method: 'PATCH', headers: headers(), body: JSON.stringify({ status }) }).then(r => r.json().then(d => ({ ok: r.ok, data: d }))),

@@ -28,7 +28,7 @@ export default function AdminDashboard() {
       const [dash, usrs, prods, reps] = await Promise.all([
         api.getDashboard(),
         api.getAdminUsers(),
-        api.getProducts(),
+        api.getAdminProducts(),
         api.getAdminReports(),
       ])
       setStats(dash)
@@ -47,7 +47,7 @@ export default function AdminDashboard() {
   }
 
   const refreshProducts = async () => {
-    const prods = await api.getProducts()
+    const prods = await api.getAdminProducts()
     const prodList = prods?.products ?? prods
     setProducts(Array.isArray(prodList) ? prodList : [])
   }
