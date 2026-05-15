@@ -165,8 +165,8 @@ export default function AdminDashboard() {
                           <span className="badge badge-navy" style={{ fontSize: 10 }}>{u.role || 'user'}</span>
                         </td>
                         <td style={{ padding: '13px 14px' }}>
-                          <span style={{ fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: 100, background: u.suspended ? '#FDECEA' : '#E6F4EC', color: u.suspended ? 'var(--danger)' : 'var(--success)' }}>
-                            {u.suspended ? 'Suspendido' : 'Activo'}
+                          <span style={{ fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: 100, background: u.isSuspended ? '#FDECEA' : '#E6F4EC', color: u.isSuspended ? 'var(--danger)' : 'var(--success)' }}>
+                            {u.isSuspended ? 'Suspendido' : 'Activo'}
                           </span>
                         </td>
                         <td style={{ padding: '13px 14px', fontSize: 12, color: 'var(--gray-400)' }}>
@@ -179,7 +179,7 @@ export default function AdminDashboard() {
                               borderRadius: 'var(--radius-sm)', fontSize: 12, cursor: 'pointer',
                               fontFamily: 'var(--font-body)', fontWeight: 600
                             }}>
-                              {u.suspended ? 'Reactivar' : 'Suspender'}
+                              {u.isSuspended ? 'Reactivar' : 'Suspender'}
                             </button>
                             <button onClick={() => { setDeleteUserModal({ user: u }); setDeleteUserForm({ reason: '', evidence: '' }) }} style={{
                               background: 'var(--danger)', color: 'var(--white)', border: 'none', padding: '6px 12px',
