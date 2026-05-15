@@ -249,9 +249,9 @@ export default function AdminDashboard() {
                       </span>
                     </div>
                     <div style={{ display: 'flex', gap: 8, borderTop: '1px solid var(--gray-100)', paddingTop: 12 }}>
-                      <button onClick={() => handleUpdateReport(r.id, 'reviewing')} style={{ background: 'var(--navy)', color: 'var(--white)', border: 'none', padding: '7px 16px', borderRadius: 'var(--radius-sm)', fontSize: 12, cursor: 'pointer', fontFamily: 'var(--font-body)', fontWeight: 600 }}>Revisar</button>
-                      <button onClick={() => handleUpdateReport(r.id, 'actioned')} style={{ background: 'var(--danger)', color: 'var(--white)', border: 'none', padding: '7px 16px', borderRadius: 'var(--radius-sm)', fontSize: 12, cursor: 'pointer', fontFamily: 'var(--font-body)', fontWeight: 600 }}>Tomar acción</button>
-                      <button onClick={() => handleUpdateReport(r.id, 'dismissed')} style={{ background: 'var(--gray-100)', color: 'var(--gray-600)', border: 'none', padding: '7px 16px', borderRadius: 'var(--radius-sm)', fontSize: 12, cursor: 'pointer', fontFamily: 'var(--font-body)', fontWeight: 600 }}>Descartar</button>
+                      <button onClick={() => handleUpdateReport(r.reportId, 'reviewing')} style={{ background: 'var(--navy)', color: 'var(--white)', border: 'none', padding: '7px 16px', borderRadius: 'var(--radius-sm)', fontSize: 12, cursor: 'pointer', fontFamily: 'var(--font-body)', fontWeight: 600 }}>Revisar</button>
+                      <button onClick={() => handleUpdateReport(r.reportId, 'actioned')} style={{ background: 'var(--danger)', color: 'var(--white)', border: 'none', padding: '7px 16px', borderRadius: 'var(--radius-sm)', fontSize: 12, cursor: 'pointer', fontFamily: 'var(--font-body)', fontWeight: 600 }}>Tomar acción</button>
+                      <button onClick={() => handleUpdateReport(r.reportId, 'dismissed')} style={{ background: 'var(--gray-100)', color: 'var(--gray-600)', border: 'none', padding: '7px 16px', borderRadius: 'var(--radius-sm)', fontSize: 12, cursor: 'pointer', fontFamily: 'var(--font-body)', fontWeight: 600 }}>Descartar</button>
                     </div>
                   </div>
                 ))}
