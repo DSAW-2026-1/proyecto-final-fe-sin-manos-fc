@@ -41,7 +41,7 @@ export default function Perfil() {
   }, [user?.userId])
 
   const currentUser = profileData || user
-  const isAdmin = currentUser?.role === 'admin'
+  const isAdmin = currentUser?.role === 'admin' || user?.role === 'admin'
 
   const handlePhoto = (e) => {
     const file = e.target.files[0]
@@ -150,7 +150,7 @@ export default function Perfil() {
                     ? <span style={{ fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: '100px', background: '#FDECEA', color: '#C0392B', border: '1px solid #F5C6C2' }}>Administrador</span>
                     : <span className={`badge ${currentUser?.isSeller ? 'badge-gold' : 'badge-navy'}`}>{currentUser?.isSeller ? 'Vendedor' : 'Comprador'}</span>
                   }
-                  {reviews.length < 5 && currentUser?.role !== 'admin' && (
+                  {reviews.length < 5 && !isAdmin && (
                     <span style={{ fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: '100px', background: 'var(--gold-pale)', color: '#8B6B1A', border: '1px solid #E8C84A', whiteSpace: 'nowrap' }}>Nuevo</span>
                   )}
                 </div>
