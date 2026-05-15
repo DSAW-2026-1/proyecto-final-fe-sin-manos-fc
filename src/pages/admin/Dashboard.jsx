@@ -59,9 +59,11 @@ export default function AdminDashboard() {
 
   const handleSuspend = async () => {
     setActionLoading(true)
+    const unitMap = { 'Minutos': 'minutes', 'Horas': 'hours', 'Días': 'days' }
+    const durationUnitEn = unitMap[suspendForm.durationUnit] || 'days'
     await api.suspendUser(suspendModal.user.id, true, suspendForm.reason, {
       action: 'suspend', evidence: suspendForm.evidence,
-      duration: suspendForm.duration, durationUnit: suspendForm.durationUnit,
+      duration: suspendForm.duration, durationUnit: durationUnitEn,
     })
     setActionLoading(false)
     setSuspendModal(null)
