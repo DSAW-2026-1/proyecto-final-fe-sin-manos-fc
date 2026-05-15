@@ -73,9 +73,7 @@ export default function AdminDashboard() {
 
   const handleDeleteUser = async () => {
     setActionLoading(true)
-    await api.suspendUser(deleteUserModal.user.userId, true, deleteUserForm.reason, {
-      action: 'delete', evidence: deleteUserForm.evidence,
-    })
+    await api.deleteUser(deleteUserModal.user.userId, deleteUserForm.reason, deleteUserForm.evidence)
     setActionLoading(false)
     setDeleteUserModal(null)
     setDeleteUserForm({ reason: '', evidence: '' })
