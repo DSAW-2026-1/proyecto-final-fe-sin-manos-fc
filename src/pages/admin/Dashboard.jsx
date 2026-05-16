@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Navbar from '../../components/Navbar'
 import { api } from '../../api'
 
 const TABS = ['Usuarios', 'Productos', 'Reportes']
 
 export default function AdminDashboard() {
+  const navigate = useNavigate()
   const [tab, setTab] = useState(0)
   const [stats, setStats] = useState(null)
   const [users, setUsers] = useState([])
@@ -241,6 +243,17 @@ export default function AdminDashboard() {
                         <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--navy)', marginBottom: 4 }}>
                           {r.reporter?.name || r.reporterName || 'Usuario'} reportó un {r.targetType || 'ítem'}
                         </p>
+                        {r.targetTitle && (
+                          <p style={{ fontSize: 12, color: 'var(--gray-500)', marginBottom: 4 }}>
+                            Referencia:{' '}
+                            <span
+                              onClick={() => navigate(r.targetType === 'product' ? `/producto/${r.targetId}` : `/vendedor/${r.targetId}`)}
+                              style={{ color: 'var(--navy)', fontWeight: 600, cursor: 'pointer', textDecoration: 'underline' }}
+                            >
+                              {r.targetTitle}
+                            </span>
+                          </p>
+                        )}
                         <p style={{ fontSize: 12, color: 'var(--gray-600)' }}>Motivo: <strong style={{ color: 'var(--navy)' }}>{r.reason}</strong></p>
                         {r.description && <p style={{ fontSize: 12, color: 'var(--gray-500)', marginTop: 4, lineHeight: 1.5 }}>{r.description}</p>}
                       </div>

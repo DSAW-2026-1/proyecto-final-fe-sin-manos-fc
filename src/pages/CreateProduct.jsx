@@ -24,9 +24,12 @@ export default function CreateProduct() {
   const [errors, setErrors] = useState({})
   const [apiError, setApiError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [adminReason, setAdminReason] = useState('')
+
+  const isAdminEditing = user?.role === 'admin' && !!editing
 
   useEffect(() => {
-    if (user?.role === 'admin') { navigate('/home'); return }
+    if (user?.role === 'admin' && !editing) { navigate('/home'); return }
     api.getCategories().then(cats => setCategories(cats)).catch(() => {})
   }, [user?.role])
 
@@ -39,6 +42,7 @@ export default function CreateProduct() {
     if (!form.price || Number(form.price) <= 0) e.price = 'El precio debe ser mayor a 0'
     if (!form.categoryId) e.category = 'Selecciona una categoría'
     if (!form.condition) e.condition = 'Selecciona el estado del producto'
+    if (isAdminEditing && !adminReason.trim()) e.adminReason = 'La razón de los cambios es obligatoria'
     return e
   }
 
@@ -60,6 +64,7 @@ export default function CreateProduct() {
     formData.append('categoryId', form.categoryId)
     formData.append('condition', form.condition)
     formData.append('stock', form.stock)
+    if (isAdminEditing) formData.append('adminReason', adminReason)
     images.forEach(img => formData.append('images', img))
 
     const res = editing
@@ -172,6 +177,21 @@ export default function CreateProduct() {
                 </div>
               )}
             </div>
+
+            {isAdminEditing && (
+              <div className="input-group" style={{ background: '#FEF3CD', border: '1px solid #FCD34D', borderRadius: 'var(--radius-md)', padding: 16 }}>
+                <label className="input-label" style={{ color: '#92400E' }}>Razón de los cambios (admin) *</label>
+                <textarea
+                  className="input-field"
+                  rows={3}
+                  placeholder="Explica por qué estás modificando este producto..."
+                  value={adminReason}
+                  onChange={e => setAdminReason(e.target.value)}
+                  style={{ resize: 'none', marginTop: 6 }}
+                />
+                {errors.adminReason && <span className="input-error">{errors.adminReason}</span>}
+              </div>
+            )}
 
             <div style={{ display: 'flex', gap: 12, paddingTop: 8 }}>
               <button onClick={() => navigate(-1)} className="btn-outline" style={{ flex: 1, padding: 14 }}>Cancelar</button>

@@ -169,8 +169,8 @@ export default function ProductDetail() {
               <span style={{ fontSize: 11, color: 'var(--gray-400)', flexShrink: 0 }}>Ver perfil →</span>
             </div>
 
-            {/* Actions — solo si no es el dueño */}
-            {!isOwner && (
+            {/* Actions — solo si no es el dueño y no es admin */}
+            {!isOwner && user?.role !== 'admin' && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {cartMsg === 'success' && (
                   <div style={{ background: '#E6F4EC', borderRadius: 'var(--radius-md)', padding: '10px 14px', fontSize: 13, color: 'var(--success)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -215,6 +215,15 @@ export default function ProductDetail() {
               <div style={{ background: 'var(--gold-pale)', borderRadius: 'var(--radius-md)', padding: '10px 14px', fontSize: 13, color: '#8B6B1A', textAlign: 'center' }}>
                 Este es tu producto
               </div>
+            )}
+            {user?.role === 'admin' && !isOwner && (
+              <button
+                onClick={() => navigate('/editar-producto', { state: { product } })}
+                className="btn-primary"
+                style={{ width: '100%', padding: 14, justifyContent: 'center' }}
+              >
+                ✏️ Editar producto
+              </button>
             )}
           </div>
         </div>
