@@ -84,7 +84,7 @@ export default function Navbar() {
               overflow: 'hidden'
             }}>
               {user.photoUrl
-                ? <img src={`${API_URL}${user.photoUrl}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={e => e.target.style.display = 'none'} />
+                ? <img src={user.photoUrl?.startsWith('data:') || user.photoUrl?.startsWith('http') ? user.photoUrl : `${API_URL}${user.photoUrl}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={e => e.target.style.display = 'none'} />
                 : (user.name?.charAt(0) || 'U')}
             </button>
 
