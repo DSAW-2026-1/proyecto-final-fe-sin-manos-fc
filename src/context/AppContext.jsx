@@ -28,7 +28,7 @@ export function AppProvider({ children }) {
 
   const login = async (email, password) => {
     const res = await api.login({ email, password })
-    if (!res.ok) return { ok: false, status: res.status, error: res.data.error }
+    if (!res.ok) return { ok: false, status: res.status, error: res.data.error, data: res.data }
     localStorage.setItem('token', res.data.token)
     localStorage.setItem('user', JSON.stringify(res.data.user))
     setUser(res.data.user)
