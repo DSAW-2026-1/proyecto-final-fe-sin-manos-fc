@@ -33,9 +33,8 @@ export default function Login() {
       if (res.status === 403) {
         const d = res.data || {}
         setSuspendedInfo({
-          until: d.suspended_until,
+          until: d.suspendedUntil,
           reason: d.reason,
-          evidence: d.evidence,
         })
         return
       }
@@ -67,13 +66,10 @@ export default function Login() {
             {suspendedInfo && (
               <div style={{ background: '#FDECEA', border: '1px solid #F5C6C2', borderRadius: 'var(--radius-md)', padding: '12px 14px', fontSize: 13, color: 'var(--danger)' }}>
                 <p style={{ fontWeight: 600, marginBottom: 4 }}>🔒 Cuenta suspendida</p>
+                {suspendedInfo.reason && <p style={{ marginBottom: 4 }}>Motivo: {suspendedInfo.reason}</p>}
                 {suspendedInfo.until && (
-                  <p style={{ marginBottom: 2 }}>
-                    Hasta: <strong>{new Date(suspendedInfo.until).toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</strong>
-                  </p>
+                  <p>Suspendido hasta: <strong>{new Date(suspendedInfo.until).toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</strong></p>
                 )}
-                {suspendedInfo.reason && <p style={{ marginBottom: 2 }}>Motivo: {suspendedInfo.reason}</p>}
-                {suspendedInfo.evidence && <p>Evidencia: {suspendedInfo.evidence}</p>}
               </div>
             )}
             {apiError && (
