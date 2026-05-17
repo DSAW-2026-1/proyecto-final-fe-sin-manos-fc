@@ -71,9 +71,10 @@ export default function Perfil() {
     setSaveLoading(false)
     if (!res.ok) { setSaveError(res.data?.error || 'Error al guardar'); return }
     await refreshUser()
-    api.getUser(user.userId).then(data => setProfileData(data)).catch(() => {})
+    await api.getUser(user.userId).then(data => setProfileData(data)).catch(() => {})
     setEditing(false)
     setPhotoFile(null)
+    setPhotoPreview(null)
   }
 
   const handleDelete = async (productId) => {
@@ -84,10 +85,11 @@ export default function Perfil() {
 
   const avgRep = parseFloat(currentUser?.reputation || 0).toFixed(1)
 
-  // URL foto de perfil
-  const photoUrl = photoPreview ||
-    (profileData?.photoUrl ? `${API_URL}${profileData.photoUrl}` : null) ||
-    (user?.photoUrl ? `${API_URL}${user.photoUrl}` : null)
+  const resolvePhoto = (url) => {
+    if (!url) return null
+    return (url.startsWith('data:') || url.startsWith('http')) ? url : `${API_URL}${url}`
+  }
+  const photoUrl = photoPreview || resolvePhoto(profileData?.photoUrl) || resolvePhoto(user?.photoUrl)
 
   const tabs = isAdmin ? [] : [
     { id: 'inventario', label: 'Mi Inventario' },
