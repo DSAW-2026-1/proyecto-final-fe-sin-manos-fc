@@ -7,6 +7,13 @@ import { useApp } from '../context/AppContext'
 import { api } from '../api'
 import { API_URL } from '../config'
 
+const toBase64 = (file) => new Promise((resolve, reject) => {
+  const reader = new FileReader()
+  reader.onload = () => resolve(reader.result)
+  reader.onerror = reject
+  reader.readAsDataURL(file)
+})
+
 export default function Perfil() {
   const { user, logout, refreshUser } = useApp()
   const navigate = useNavigate()
@@ -47,7 +54,7 @@ export default function Perfil() {
     const file = e.target.files[0]
     if (!file) return
     if (!['image/jpeg', 'image/jpg', 'image/png'].includes(file.type)) { setPhotoError('Solo JPG o PNG'); return }
-    if (file.size > 2 * 1024 * 1024) { setPhotoError('La foto no puede superar 2MB'); return }
+    if (file.size > 2 * 1024 * 1024) { setPhotoError('La imagen no puede superar 2MB'); return }
     setPhotoError('')
     setPhotoFile(file)
     setPhotoPreview(URL.createObjectURL(file))
@@ -58,15 +65,12 @@ export default function Perfil() {
     if (!form.name.trim()) { setSaveError('El nombre no puede estar vacío'); return }
     if (photoError) return
     setSaveLoading(true)
-    const formData = new FormData()
-    formData.append('name', form.name)
-    formData.append('career', form.carrera || '')
-    if (photoFile) formData.append('photo', photoFile)
-    const res = await api.updateUser(user.userId, formData)
+    const body = { name: form.name, career: form.carrera || '' }
+    if (photoFile) body.photoUrl = await toBase64(photoFile)
+    const res = await api.updateUser(user.userId, body)
     setSaveLoading(false)
     if (!res.ok) { setSaveError(res.data?.error || 'Error al guardar'); return }
     await refreshUser()
-    // Recargar perfil con foto nueva
     api.getUser(user.userId).then(data => setProfileData(data)).catch(() => {})
     setEditing(false)
     setPhotoFile(null)

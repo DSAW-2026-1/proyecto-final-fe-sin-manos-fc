@@ -11,7 +11,7 @@ export const api = {
   me: () => fetch(`${BASE}/auth/me`, { headers: headers() }).then(r => r.json()),
 
   getUser: (userId) => fetch(`${BASE}/users/${userId}`, { headers: headers() }).then(r => r.json()),
-  updateUser: (userId, formData) => fetch(`${BASE}/users/${userId}`, { method: 'PUT', headers: authHeaders(), body: formData }).then(r => r.json().then(d => ({ ok: r.ok, data: d }))),
+  updateUser: (userId, data) => fetch(`${BASE}/users/${userId}`, { method: 'PUT', headers: headers(), body: JSON.stringify(data) }).then(r => r.json().then(d => ({ ok: r.ok, data: d }))),
 
   getProducts: (params = {}) => { const q = new URLSearchParams(params).toString(); return fetch(`${BASE}/products${q ? '?' + q : ''}`, { headers: headers() }).then(r => r.json()) },
   getProduct: (id) => fetch(`${BASE}/products/${id}`, { headers: headers() }).then(r => r.json()),

@@ -4,6 +4,13 @@ import { useApp } from '../context/AppContext'
 import CarreraSelector from '../components/CarreraSelector'
 import { API_URL } from '../config'
 
+const toBase64 = (file) => new Promise((resolve, reject) => {
+  const reader = new FileReader()
+  reader.onload = () => resolve(reader.result)
+  reader.onerror = reject
+  reader.readAsDataURL(file)
+})
+
 export default function Register() {
   const [step, setStep] = useState(1)
   const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '', carrera: '' })
@@ -53,7 +60,7 @@ export default function Register() {
     const file = e.target.files[0]
     if (!file) return
     if (!['image/jpeg', 'image/jpg', 'image/png'].includes(file.type)) { setFotoError('Solo JPG o PNG'); return }
-    if (file.size > 2 * 1024 * 1024) { setFotoError('La foto no puede superar 2MB'); return }
+    if (file.size > 2 * 1024 * 1024) { setFotoError('La imagen no puede superar 2MB'); return }
     setFotoError('')
     setFotoFile(file)
     setFotoPreview(URL.createObjectURL(file))
@@ -77,13 +84,13 @@ export default function Register() {
       const token = localStorage.getItem('token')
       const userId = JSON.parse(localStorage.getItem('user'))?.userId
       if (userId && token) {
-        const fd = new FormData()
-        if (form.carrera) fd.append('career', form.carrera)
-        if (fotoFile) fd.append('photo', fotoFile)
+        const body = {}
+        if (form.carrera) body.career = form.carrera
+        if (fotoFile) body.photoUrl = await toBase64(fotoFile)
         await fetch(`${API_URL}/api/users/${userId}`, {
           method: 'PUT',
-          headers: { Authorization: `Bearer ${token}` },
-          body: fd
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify(body)
         })
       }
     }
